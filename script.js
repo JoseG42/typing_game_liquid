@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameState = 'paused';
         // get random word
         randomWord = words[Math.floor(Math.random() * words.length)];
-        gameStatusDisplay.textContent = 'Paused - Press "Start Game" to continue!';
+        gameStatusDisplay.textContent = 'Paused';
         // Hide the pause button
         pauseGameButton.style.display = 'none';
         // Hide typing input
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameState = 'paused';
         // get random word
         randomWord = words[Math.floor(Math.random() * words.length)];
-        gameStatusDisplay.textContent = 'Game reset - Press "Start Game" to begin!';
+        gameStatusDisplay.textContent = 'Game reset';
         // Hide the pause button
         pauseGameButton.style.display = 'none';
         // Hide the continue game button

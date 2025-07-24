@@ -7,20 +7,22 @@
     <title>TRPG</title>
 </head>
 <body>
-    <h1>
-        Typing Role-Playing Game (TRPG)
-    </h1>
-    <p>
-        I want to make a typing game that helps players improve their typing speed and accuracy while enjoying a fun and engaging storyline.
-    </p>
-    <div class = 'date-time-grid'>
-        <!-- Date and Time Display -->
-        <h4 id = 'date-block'>
-            2000-01-01
-        </h4>
-        <h4 id = 'time-block'>
-            00:00:00
-        </h4>
+    <div class="header">
+        <h1>
+            Typing Role-Playing Game (TRPG)
+        </h1>
+        <p>
+            I want to make a typing game that helps players improve their typing speed and accuracy while enjoying a fun and engaging storyline.
+        </p>
+        <div class = 'date-time-grid'>
+            <!-- Date and Time Display -->
+            <b id = 'date-block'>
+                2000-01-01
+            </b>
+            <b id = 'time-block'>
+                00:00:00
+            </b>
+        </div>
     </div>
     <div class="game-container">
         <button id="start-game">Start Game</button>
@@ -30,31 +32,31 @@
 
     </div>
     <div class="game-info">
-        <p id="game-status">Game status: <b>PAUSED</b> - Press "Start Game" to begin!</p>
+        <p>Game status: <b id="game-status">PAUSED</b></p>
         <p>Typing Speed: <b id="typing-speed">0</b> WPM</p>
         <p>Accuracy: <b id="accuracy">0%</b></p>
-        <div>
-            <!-- Game Timer-->
-             <h6>
-                Game Timer: <b id="game-timer">00:00</b>
-             </h6>
-            <!-- Game Start Time-->
-            <h6>
-                Game Start Time: <b id="game-start-time">00:00</b>
-            </h6>
-            <!-- Game End Time-->
-            <h6>
-                Game End Time: <b id="game-end-time">00:00</b>
-            </h6>
-            <!-- Total Run Time-->
-            <h6>
-                Total Run Time: <b id="total-run-time">00:00</b>
-            </h6>
+        
+        <!-- Game Timer-->
+        <h6>
+            Game Timer: <b id="game-timer">00:00</b>
+        </h6>
+        <!-- Game Start Time-->
+        <h6>
+            Game Start Time: <b id="game-start-time">00:00</b>
+        </h6>
+        <!-- Game End Time-->
+        <h6>
+            Game End Time: <b id="game-end-time">00:00</b>
+        </h6>
+        <!-- Total Run Time-->
+        <h6>
+            Total Run Time: <b id="total-run-time">00:00</b>
+        </h6>
+        <div class = 'test-div'>
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ
         </div>
     </div>
-    <div class = 'test-div'>
-        ABCDEFGHIJKLMNOPQRSTUVWXYZ
-    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
