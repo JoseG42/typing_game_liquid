@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // avgWPM = 0; // Default average words per minute
     let avgWPM = 0; // Default average words per minute
     // runTime = 0; // Default run time
-    let runTime = 0; // Default run time
+    let runTime; // Default run time
     // randomWord = ''; // Default random word
     let randomWord = 'random'; // Default random word
     // make a current word variable
@@ -70,12 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let formattedTime = new Date().toTimeString().split(' ')[0];
         // set the text content of the time block
         timeBlock.textContent = formattedTime;    
-    }, 1000);
+    }, 999); // update every 999 milliseconds
 
     // program the game timer
     const gameTimer = document.getElementById('game-timer');
     // program the game start time
     const gameStartTime = document.getElementById('game-start-time');
+    // program the game pause time
+    const gamePauseTime = document.getElementById('game-pause-time');
     // program the game end time
     const gameEndTime = document.getElementById('game-end-time');
     // program the total run time
@@ -85,7 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize gameStartTimeStamp and gameEndTimeStamp
     let gameStartTimeStamp;
     let gameEndTimeStamp;
-    // Initialize the 
+    // Initialize the elapsed time
+    let elapsedTime;
+    // init pauseTime
+    let pauseTime;
+    // Init continueTime
+    let continueTime;
 
     // Function to start the game timer
     function startTimer() {
@@ -93,45 +100,54 @@ document.addEventListener('DOMContentLoaded', () => {
         gameStartTimeStamp = new Date();
         // set the game start time to the current time
         gameStartTime.textContent = gameStartTimeStamp.toTimeString().split(' ')[0];
+        // set the test div to the game start time
+        //testDiv.textContent = `Game started at: ${gameStartTimeStamp.toString()}`;
 
+        // start the timer interval
         timerInterval = setInterval(function() {
-            // get the current time
-            const now = new Date();
-            // calculate the elapsed time in seconds
-            const elapsedSeconds = Math.floor((now - gameStartTimeStamp) / 1000);
-            // calculate minutes and seconds
-            const minutes = Math.floor(elapsedSeconds / 60);
-            const seconds = elapsedSeconds % 60;
-            // format the time as MM:SS
-            gameTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }, 1000);
+            // get the difference between the current time and the game start time
+            elapsedTime = new Date() - gameStartTimeStamp;
+            // set the test div to the elapsed time
+            //testDiv.textContent = `Elapsed time: ${elapsedTime} seconds`;
+            // format the time as MM:SS:DS
+            let formattedTime = `${(Math.floor(elapsedTime / 60000)).toString().padStart(2, '0')}:${(Math.floor(elapsedTime / 1000) % 60).toString().padStart(2, '0')}:${(Math.floor(elapsedTime / 100) % 10).toString().padStart(1, '0')}`;
+            // set the text content of the game timer
+            gameTimer.textContent = formattedTime;
+        }, 17); // update every 17 milliseconds
     }
 
     // function to stop the game timer
     function pauseTimer() {
+        // getthe pauseTime
+        pauseTime = new Date();
+        // runTime equals the difference between the pause time and the game start time
+        runTime = pauseTime - gameStartTimeStamp;
+        // set the test div to the pause time
+        testDiv.textContent = `Game paused at: ${pauseTime}`;
         // stop the timer interval
         clearInterval(timerInterval);
-        // gameEndTimeStamp
-        gameEndTimeStamp = new Date();
-        gameEndTime.textContent = gameEndTimeStamp.toTimeString().split(' ')[0];
-        // calculate the total run time
-        totalRunTime.textContent = (gameEndTimeStamp - gameStartTimeStamp) / 1000; // in seconds
+        // gamePauseTime
+        gamePauseTime.textContent = pauseTime.toTimeString().split(' ')[0];
+        // set the total run time
+        totalRunTime.textContent = `${Math.floor(runTime / 60000)}:${String(Math.floor(runTime / 1000) % 60).padStart(2, '0')}`;
+
     }
 
     // function to continue the game timer
     function continueTimer() {
+        // get the continue time
+        continueTime = new Date();
         // start the timer interval
         timerInterval = setInterval(function() {
-            // get the current time
-            const now = new Date();
-            // calculate the elapsed time in seconds
-            const elapsedSeconds = Math.floor((now - gameStartTimeStamp) / 1000);
-            // calculate minutes and seconds
-            const minutes = Math.floor(elapsedSeconds / 60);
-            const seconds = elapsedSeconds % 60;
-            // format the time as MM:SS
-            gameTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }, 1000);
+            // elapsedTime equals elapsed time plus the difference between the continue time and now
+            elapsedTime += 17; // 17 milliseconds
+            // set the test div to the elapsed time
+            //testDiv.textContent = `Elapsed time: ${elapsedTime} seconds`;
+            // format the time as MM:SS:DS
+            let formattedTime = `${(Math.floor(elapsedTime / 60000)).toString().padStart(2, '0')}:${(Math.floor(elapsedTime / 1000) % 60).toString().padStart(2, '0')}:${(Math.floor(elapsedTime / 100) % 10).toString().padStart(1, '0')}`;
+            // set the text content of the game timer
+            gameTimer.textContent = formattedTime;
+        }, 17); // update every 17 milliseconds
     }
 
     // function to reset the game timer
