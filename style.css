@@ -93,6 +93,14 @@ button {
     background-color: #17a2b8;
 }
 
+/* Style for the sentence class */
+.sentence {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0;
+}
+
 /* Style for the correct class */
 .correct {
     color: #28a745; /* Green for correct words */

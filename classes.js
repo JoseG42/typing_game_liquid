@@ -72,6 +72,16 @@ export class Char {
             };
             // add keydown event listener to the document
             document.addEventListener("keydown", handler, { once: true });
+            
+            // store the number of .correct characters
+            let correctChars = document.querySelectorAll('.correct').length;
+            // store the number of .incorrect characters
+            let incorrectChars = document.querySelectorAll('.incorrect').length;
+            // calculate the accuracy
+            let accuracy = ((correctChars - incorrectChars) / (correctChars + incorrectChars)) * 100;
+            // get an element with id 'accuracy'
+            const accuracyElement = document.getElementById('accuracy');
+            accuracyElement.textContent = `${accuracy.toFixed(2)}%`;
         });
     }
 }
@@ -179,7 +189,9 @@ export class Word {
                 // resolve after all characters are processed
                 resolve(
                     // remove the current class from the div
-                    this.div.classList.remove("current")
+                    this.div.classList.remove("current"),
+                    // add the typed class to the div
+                    this.div.classList.add("typed"),
                 );
                 // if the word becomes skipped, reject the promise
                 if (this.div.classList.contains("skipped")) {
@@ -218,19 +230,110 @@ export class Sentence {
 
     // Method to make the sentence current
     async isCurrent() {
-        // for word of words
-        for (let word of this.words) {
-            // add the current class to the word's div
-            word.div.classList.add("current");
-            try {
-                // call the isCurrent method on each Word object
-                await word.isCurrent();
-            } catch (error) {
-                // remove the current class from the word's div
-                word.div.classList.remove("current");
-            }
-        }
+        // new Promise
+        return new Promise(async (resolve, reject) => {
+            // for word of words
+          for (let word of this.words) {
+              // add the current class to the word's div
+              word.div.classList.add("current");
+              try {
+                  // call the isCurrent method on each Word object
+                  await word.isCurrent();
+              } catch (error) {
+                  // remove the current class from the word's div
+                  word.div.classList.remove("current");
+              }
+          }
+          // resolve after all words are processed
+          resolve(
+              // remove the current class from the div
+              this.div.classList.remove("current")
+          );
+
+        });
+
         // complete prompt
         //promptComplete();
     }
 }
+
+// Make a prompt class
+export class Prompt {
+  // Constructor takes any number of sentences
+  constructor(...sentences) {
+        this.all = [];
+        for (let sentence of sentences) {
+            if (sentence instanceof Sentence) {
+                this.all.push(sentence);
+            }
+        }
+        this.div = document.createElement("div");
+        this.div.classList.add("prompt");
+        // Append each sentence to the prompt div
+        for (let sentence of this.all) {
+          this.div.appendChild(sentence.div);
+        }
+        // totalWords
+        this.totalWords = this.all.reduce((total, sentence) => {
+            return total + sentence.words.length;
+        }, 0);
+        // typedWords
+        this.typedWords = 0;
+        //WPM
+        this.wpm = 0;
+    }
+
+    // Method to calculate and log the total words in the prompt
+    logTotalWords() {
+        console.log(`Total words in prompt: ${this.totalWords}`);
+    }
+
+    
+
+
+    // Method to track WPM
+    trackWPM() {
+        // listen for the first keydown event using a one-time event listener
+        document.addEventListener("keydown", () => {
+            // startTimeStamp
+            this.startTimeStamp = Date.now();
+        }, { once: true });
+        // listen for the last keydown event using a one-time event listener
+    }
+
+    // Method to make the prompt current
+    async isCurrent() {
+      // store the start time
+        const startTime = Date.now();
+            // for sentence of sentences
+            for (let sentence of this.all) {
+                // add the current class to the sentence's div
+                sentence.div.classList.add("current");
+                try {
+                    // call the isCurrent method on each Sentence object
+                    await sentence.isCurrent();
+                } catch (error) {
+                    // remove the current class from the sentence's div
+                    sentence.div.classList.remove("current");
+                }
+            }
+            // store the end time
+            const endTime = Date.now();
+            // calculate the time taken
+            const timeTaken = endTime - startTime;
+            // calculate the typedWords
+            this.typedWords = this.div.querySelectorAll('.typed').length;
+            // calculate the WPM
+            this.wpm = Math.round((this.typedWords / (timeTaken / 60000)) * 100) / 100; // Round to two decimal places
+            // get an element with id 'typing-speed'
+            const typingSpeedElement = document.getElementById('typing-speed');
+            // set the text content of the element to the WPM
+            typingSpeedElement.textContent = this.wpm;
+            // log the time taken
+            console.log(`Time taken: ${timeTaken} ms`);
+            // store timeTaken as a property
+            this.timeTaken = timeTaken;
+            // return both wpm and timeTaken as an object
+            return { wpm: this.wpm, timeTaken: this.timeTaken };
+        }
+  }

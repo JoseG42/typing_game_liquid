@@ -1,5 +1,5 @@
 // Import the joe object from classes.js
-import {Char, SpecChar, Word, Sentence} from './classes.js';
+import {Char, SpecChar, Word, Sentence, Prompt} from './classes.js';
 
 // JavaScript code for the Typing Role-Playing Game (TRPG)
 // listen for the DOMContentLoaded event to ensure the DOM is fully loaded before running the script
@@ -11,16 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameState = 'paused'; // Default game state
     // currentLevel = 0; // Default current level
     let currentLevel = 0; // Default current level
-    // score = 0; // Default score
-    let score = 0; // Default score
+    // typedWords = 0; // Default score
+    let typedWords = 0; // Default score
     // bestWPM = 0; // Default best words per minute
     let bestWPM = 0; // Default best words per minute
     // avgWPM = 0; // Default average words per minute
     let avgWPM = 0; // Default average words per minute
     // runTime = 0; // Default run time
     let runTime; // Default run time
-    // randomWord = ''; // Default random word
-    let randomWord = 'random'; // Default random word
     // Initialize the game timer
     let timerInterval;
     // Initialize gameStartTimeStamp and gameEndTimeStamp
@@ -50,19 +48,38 @@ document.addEventListener('DOMContentLoaded', () => {
         'castle',
         'dungeon',
         'treasure',
+        'monster',
+        'spell',
+        'potion',
+        'knight',
+        'archer',
+        'wizard',
+        'elf',
+        'orc',
+        'goblin',
+        'troll',
+        'fairy',
+        'giant',
+        'hydra',
+        'phoenix',
+        'griffin',
+        'goddess',
+        'god',
+        'myth',
+        'legend',
+        'fable',
+        'tale',
 
     ];
 
     // Initialize game elements
     const gameContainer = document.querySelector('.game-container');
-    // make a current prompt div
-    const currentPromptDiv = document.createElement('div');
-    // set the class for the current prompt div
-    currentPromptDiv.classList.add('current-prompt');
-    // put currentPromptDiv in the game container
-    gameContainer.appendChild(currentPromptDiv);
-    // get the user input element
-    const userInput = document.getElementById('user-input');
+    // // make a current prompt div
+    // const currentPromptDiv = document.createElement('div');
+    // // set the class for the current prompt div
+    // currentPromptDiv.classList.add('current-prompt');
+    // // put currentPromptDiv in the game container
+    // gameContainer.appendChild(currentPromptDiv);
     // start game button
     const startGameButton = document.querySelector('#start-game');
     // continue game button
@@ -103,26 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // program the total run time
     const totalRunTime = document.getElementById('total-run-time');
 
-    // function to add a class to an element
-
-    // function to remove a class from an element
-
-    // function to format the word
-    function formatWord(word) {
-        // make a word div with each character in a span
-        const wordDiv = document.createElement('div');
-        // add the class 'word' to the word div
-        wordDiv.classList.add('word');
-
-        word.split('').forEach(char => {
-            const charSpan = document.createElement('span');
-            // set the class for the character span
-            charSpan.classList.add('char');
-            charSpan.textContent = char;
-            wordDiv.appendChild(charSpan);
-        });
-        return wordDiv;
-    }
 
     // Function to start the game timer
     function startTimer() {
@@ -201,21 +198,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // function to create the typing prompt
     function createTypingPrompt() {
-        // Clear the current prompt div
-        currentPromptDiv.textContent = '';
-        // Make a 'prompt' Sentence object
-        const prompt = new Sentence();
-        // get three random words from the words array
-        for (let i = 0; i < 3; i++) {
+        // Make a 'randomSentence' Sentence object
+        const randomSentence = new Sentence();
+        // get ten random words from the words array
+        for (let i = 0; i < 10; i++) {
             // Create a new Word object with a random word
             const randomWord = new Word(getRandomWord());
             // add the word to the prompt
-            prompt.addWord(randomWord);
+            randomSentence.addWord(randomWord);
         }
-        // append the prompt to the current prompt div
-        currentPromptDiv.appendChild(prompt.div);
+        // Make a randomPrompt Prompt object
+        const randomPrompt = new Prompt(randomSentence);
+        // add the randomPrompt to the game container
+        gameContainer.appendChild(randomPrompt.div);
+        // logTotalWords
+        randomPrompt.logTotalWords();
         // make the prompt current
-        prompt.isCurrent().then(() => {
+        randomPrompt.isCurrent().then(() => {
+            // get the number of typed words
+            const typedWords = randomPrompt.div.querySelectorAll('.typed').length;
+            // log the number of typed words
+            console.log(`Typed words: ${typedWords}`);
             // complete the prompt
             promptComplete();
         });
@@ -237,8 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function startGame() {
         // Reset the game state
         gameState = 'playing';
-        // Get a random word
-        randomWord = words[Math.floor(Math.random() * words.length)];
         // Update the game status display
         gameStatusDisplay.textContent = 'Playing';
         // Display the pause button
@@ -298,8 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resetGameButton.addEventListener('click', () => {
         // Reset the game
         gameState = 'paused';
-        // get random word
-        randomWord = words[Math.floor(Math.random() * words.length)];
+        // Update the game status display
         gameStatusDisplay.textContent = 'Game reset';
         // Hide the pause button
         pauseGameButton.style.display = 'none';
@@ -307,106 +307,13 @@ document.addEventListener('DOMContentLoaded', () => {
         continueGameButton.style.display = 'none';
         // Hide the reset button
         resetGameButton.style.display = 'none';
-        // Clear the text in Current Prompt Div
-        currentPromptDiv.textContent = '';
         // display the start game button
         startGameButton.style.display = 'inline-block';
+        // remove the prompt div
+        const currentPrompt = document.querySelector('.prompt');
+        if (currentPrompt) currentPrompt.remove();
         // Reset the game timer
         resetTimer();
     });
 
-
-    // // listen for keyup events on game container
-    // gameContainer.addEventListener('keyup', (event) => {
-    //     // constants
-    //     // key input
-    //     const key = event.key;
-    //     // current word
-    //     const currentWord = currentPromptDiv.querySelectorAll('.word.current');
-    //     // current letter
-    //     const currentLetter = currentPromptDiv.querySelector('.char.current');
-    //     // expected
-    //     const expected = currentLetter?. textContent || '';
-    //     // isChar
-    //     const isChar = key.length === 1 && key !== ' ';
-    //     // isSpace
-    //     const isSpace = key === ' ';
-    //     // isBackspace
-    //     const isBackspace = key === 'Backspace';
-    //     // isFirstLetter
-    //     const isFirstLetter = currentLetter === currentWord.firstChild;
-    //
-    //     // if the game is paused, do nothing
-    //     if (gameState === 'paused') {
-    //         return;
-    //     }// else
-    //     else{
-    //         // log key and expected
-    //         console.log(`Key input: ${key}, Expected: ${expected}`);
-    //         if (isChar) {
-    //             if (currentLetter) {
-    //                 // check if the pressed key matches the character in the span
-    //                 if (key === expected) {
-    //                     // add the 'correct' class to the span
-    //                     currentLetter.classList.add('correct');
-    //                     if (currentLetter.nextSibling) {
-    //                         currentLetter.nextSibling.classList.add('current');
-    //                         currentLetter.classList.remove('current');
-    //                     }
-    //                     // else {
-    //                     //     // If it's the last character, end the game
-    //                     //     gameState = 'paused';
-    //                     //     gameStatusDisplay.textContent = 'Completed';
-    //                     //     pauseGameButton.style.display = 'none';
-    //                     //     resetGameButton.style.display = 'inline-block';
-    //                     //     // Stop the game timer
-    //                     //     pauseTimer();
-    //                     // }
-    //                 } else {
-    //                     // create new mistake span
-    //                     const mistakeSpan = document.createElement('span');
-    //                     mistakeSpan.textContent = key;
-    //                     mistakeSpan.classList.add('incorrect', 'mistake');
-    //                     // add the mistake span to the current word
-    //                     currentWord.appendChild(mistakeSpan);
-    //                 }
-    //             }
-    //         }
-    //         if (isSpace) {
-    //             if (expected !== '') {
-    //                 // invalidate the word's remaining characters
-    //                 const remainingChars = document.querySelectorAll('.word.current .char:not(.correct)');
-    //                 remainingChars.forEach((char) => {
-    //                     char.classList.add('incorrect');
-    //                 });
-    //             }
-    //             // Get the current word element (single element, not NodeList)
-    //             const currentWordElem = currentPromptDiv.querySelector('.word.current');
-    //             if (currentWordElem) {
-    //                 // Remove 'current' class from current word
-    //                 currentWordElem.classList.remove('current');
-    //                 // Remove 'current' class from current letter
-    //                 const currentCharElem = currentWordElem.querySelector('.char.current');
-    //                 if (currentCharElem) {
-    //                     currentCharElem.classList.remove('current');
-    //                 }
-    //                 // Advance to next word
-    //                 const nextWordElem = currentWordElem.nextSibling;
-    //                 if (nextWordElem && nextWordElem.classList.contains('word')) {
-    //                     nextWordElem.classList.add('current');
-    //                     // Add 'current' class to the first letter of the next word
-    //                     const nextCharElem = nextWordElem.querySelector('.char');
-    //                     if (nextCharElem) {
-    //                         nextCharElem.classList.add('current');
-    //                     }
-    //                 }
-    //             }
-    //             // Clear the user input field
-    //             userInput.value = '';
-    //         }
-    //             currentWord[0]?.nextSibling?.firstChild?.classList.add('current');
-    //         }
-    // });
-
-    
 });
