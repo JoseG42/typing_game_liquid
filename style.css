@@ -92,24 +92,51 @@ button {
     display: none; /* Initially hidden */
     background-color: #17a2b8;
 }
-/* input[type="text"] {
+
+/* Style for the correct class */
+.correct {
+    color: #28a745; /* Green for correct words */
+    font-weight: bold;
+}
+/* Style for the incorrect class */
+.incorrect {
+    color: #dc3545; /* Red for incorrect words */
+    font-weight: bold;
+}
+
+input[type="text"] {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 5px solid #ccc;
+    border-radius: 20px;
     font-size: 16px;
 }
 
 input[type="text"]:focus {
     border-color: #007bff;
     outline: none;
-} */
+}
 
 /* style input placeholder text */
 input::placeholder {
-    color: #33ff00;
+    color: #33ff004f;
     font-style: italic;
     font-size: 32px;
+}
+
+/* Style for words */
+.word {
+    display: flex;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 4px;
+    font-size: 24px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Style for the current element(s) */
+.current {
+    border: 2px solid #007bff;
 }
 
 /* Style for game info */
