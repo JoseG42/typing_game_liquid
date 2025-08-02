@@ -1,5 +1,5 @@
 // Import the joe object from classes.js
-import {Char, SpecChar, Word, Sentence, Prompt} from './classes.js';
+import {Char, SpecChar, Word, Sentence, Prompt, GameInput} from './classes.js';
 
 // JavaScript code for the Typing Role-Playing Game (TRPG)
 // listen for the DOMContentLoaded event to ensure the DOM is fully loaded before running the script
@@ -120,6 +120,77 @@ document.addEventListener('DOMContentLoaded', () => {
     // program the total run time
     const totalRunTime = document.getElementById('total-run-time');
 
+
+    //function to display scene0
+    function displayScene0() {
+        // declare a selection variable
+        let selection;
+        // Make a playerInput GameInput object
+        const playerInput = new GameInput(gameContainer);
+        // Make a 'wStart' Word object
+        const wStart = new Word('start');
+        // Make a 'wGame' Word object
+        const wGame = new Word('game','!');
+        // Make a 'pStartGame' Prompt object
+        const pStartGame = new Prompt(wStart, wGame);
+        // Add the pStartGame to the game container
+        gameContainer.appendChild(pStartGame.div);
+        // float the start game prompt
+        pStartGame.float(startGame);
+        // array of options
+        const options = [
+            pStartGame
+        ];
+        // input handler
+        const inputHandler = (e) => {
+            // if the input value is enter
+            playerInput.submit.onclick = (clickEvent) => {
+                clickEvent.preventDefault();
+                try {
+                    // log 'Input value: Enter' to the console
+                    //console.log('Input value: Enter');
+                    // query the first prompt with the floating class
+                    const floatingPrompt = document.querySelector('.floating');
+                    // if the floating prompt exists
+                    if (floatingPrompt) {
+                        // select the floating prompt
+                        selection = floatingPrompt;
+                        // log the floating prompt
+                        console.log('Floating prompt found:', floatingPrompt);
+                        // clear the input value
+                        playerInput.input.value = '';
+                        // resolve the floating prompt
+                        floatingPrompt.classList.add('resolved');
+                        // reject all other prompts
+                        options.forEach(opt => {
+                            if (opt.div !== floatingPrompt) {
+                                opt.div.classList.add('rejected');
+                            }
+                        });
+                    } else {
+                        // log an error if no floating prompt is found
+                        console.error('No floating prompt found');
+                    }
+                } catch (error) {
+                    // log any errors to the console
+                    console.error('Error querying floating prompt:', error);
+                }
+            }
+            const value = e.target.value.toLowerCase();
+            options.forEach(opt =>{
+                // console.log(opt.div.className);
+                const isVisible = opt.div.className.includes(value)
+                opt.div.classList.toggle("hidden", !isVisible);
+                opt.div.classList.toggle("floating", isVisible);
+            })
+            // log the input value
+            //console.log(`Input value: ${e.target.value}`);
+        }
+        // add the input event listener to the playerInput
+        playerInput.input.addEventListener('input', inputHandler);
+
+
+    }
 
     // Function to start the game timer
     function startTimer() {
@@ -261,6 +332,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Call the startGame function
         startGame();
         
+        
+        
     });
 
     // listen for click events on the continue game button
@@ -315,5 +388,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset the game timer
         resetTimer();
     });
+
+    // call displayScene0 to show the initial scene
+    displayScene0();
 
 });
