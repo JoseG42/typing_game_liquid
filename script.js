@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let pauseTime;
     // Init continueTime
     let continueTime;
+    // Init selection
+    let selection;
 
     // Array of words for the game
     const words = [
@@ -72,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     ];
 
+    // test sentence
+    const testSentence = 'the quick brown fox jumps over the lazy dog.';
+
     // Initialize game elements
     const gameContainer = document.querySelector('.game-container');
     // // make a current prompt div
@@ -80,16 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // currentPromptDiv.classList.add('current-prompt');
     // // put currentPromptDiv in the game container
     // gameContainer.appendChild(currentPromptDiv);
-    // start game button
-    const startGameButton = document.querySelector('#start-game');
-    // continue game button
-    const continueGameButton = document.querySelector('#continue-game');
     // game status display
     const gameStatusDisplay = document.querySelector('#game-status');
-    // pause game button
-    const pauseGameButton = document.getElementById('pause-game');
-    // reset game button
-    const resetGameButton = document.getElementById('reset-game');
     // test div
     const testDiv = document.querySelector('.test-div');
     // date block
@@ -119,14 +116,64 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameEndTime = document.getElementById('game-end-time');
     // program the total run time
     const totalRunTime = document.getElementById('total-run-time');
-
+    // Make a playerInput GameInput object
+    const playerInput = new GameInput(gameContainer);
+    // input handler
+    const inputHandler = (e) => {
+        // if the input value is enter
+        playerInput.submit.onclick = (clickEvent) => {
+            clickEvent.preventDefault();
+            try {
+                // log 'Input value: Enter' to the console
+                //console.log('Input value: Enter');
+                // query the first prompt with the floating class
+                const floatingPrompt = document.querySelector('.floating');
+                // if the floating prompt exists
+                if (floatingPrompt) {
+                    // select the floating prompt
+                    selection = floatingPrompt;
+                    // log the floating prompt
+                    console.log('Floating prompt found:', floatingPrompt);
+                    // clear the input value
+                    playerInput.input.value = '';
+                    // resolve the floating prompt
+                    floatingPrompt.classList.add('resolved');
+                    // reject all other prompts
+                    options.forEach(opt => {
+                        if (opt.div !== floatingPrompt) {
+                            opt.div.classList.add('rejected');
+                        }
+                    });
+                } else {
+                    // log an error if no floating prompt is found
+                    console.error('No floating prompt found');
+                }
+            } catch (error) {
+                // log any errors to the console
+                console.error('Error querying floating prompt:', error);
+            }
+        }
+        const value = e.target.value.toLowerCase();
+        options.forEach(opt =>{
+            // console.log(opt.div.className);
+            const isVisible = opt.div.className.includes(value)
+            opt.div.classList.toggle("hidden", !isVisible);
+            opt.div.classList.toggle("floating", isVisible);
+        })
+        // log the input value
+        console.log(`Input value: ${e.target.value}`);
+    }
+    // add the input event listener to the playerInput
+    playerInput.input.addEventListener('input', inputHandler);
+    // array of options
+    const options = [];
 
     //function to display scene0
     function displayScene0() {
-        // declare a selection variable
-        let selection;
-        // Make a playerInput GameInput object
-        const playerInput = new GameInput(gameContainer);
+        // Clear the game container
+        gameContainer.innerHTML = '';
+        // append the player input form to the game container
+        gameContainer.appendChild(playerInput.form);
         // Make a 'wStart' Word object
         const wStart = new Word('start');
         // Make a 'wGame' Word object
@@ -137,58 +184,20 @@ document.addEventListener('DOMContentLoaded', () => {
         gameContainer.appendChild(pStartGame.div);
         // float the start game prompt
         pStartGame.float(startGame);
-        // array of options
-        const options = [
-            pStartGame
-        ];
-        // input handler
-        const inputHandler = (e) => {
-            // if the input value is enter
-            playerInput.submit.onclick = (clickEvent) => {
-                clickEvent.preventDefault();
-                try {
-                    // log 'Input value: Enter' to the console
-                    //console.log('Input value: Enter');
-                    // query the first prompt with the floating class
-                    const floatingPrompt = document.querySelector('.floating');
-                    // if the floating prompt exists
-                    if (floatingPrompt) {
-                        // select the floating prompt
-                        selection = floatingPrompt;
-                        // log the floating prompt
-                        console.log('Floating prompt found:', floatingPrompt);
-                        // clear the input value
-                        playerInput.input.value = '';
-                        // resolve the floating prompt
-                        floatingPrompt.classList.add('resolved');
-                        // reject all other prompts
-                        options.forEach(opt => {
-                            if (opt.div !== floatingPrompt) {
-                                opt.div.classList.add('rejected');
-                            }
-                        });
-                    } else {
-                        // log an error if no floating prompt is found
-                        console.error('No floating prompt found');
-                    }
-                } catch (error) {
-                    // log any errors to the console
-                    console.error('Error querying floating prompt:', error);
-                }
-            }
-            const value = e.target.value.toLowerCase();
-            options.forEach(opt =>{
-                // console.log(opt.div.className);
-                const isVisible = opt.div.className.includes(value)
-                opt.div.classList.toggle("hidden", !isVisible);
-                opt.div.classList.toggle("floating", isVisible);
-            })
-            // log the input value
-            //console.log(`Input value: ${e.target.value}`);
-        }
-        // add the input event listener to the playerInput
-        playerInput.input.addEventListener('input', inputHandler);
-
+        // Make a 'wTest' Word object
+        const wTest = new Word('test');
+        // Make a 'wSentence' Word object
+        const wSentence = new Word('sentence');
+        // Make a 'pTestSentence' Prompt object
+        const pTestSentence = new Prompt(wTest, wSentence);
+        // Add the pTestSentence to the game container
+        gameContainer.appendChild(pTestSentence.div);
+        // float the test sentence prompt
+        pTestSentence.float(playTestSentence);
+        // push pStartGame, pTestSentence to the options array
+        options.push(pStartGame, pTestSentence);
+        // focus on the player input
+        playerInput.input.focus();
 
     }
 
@@ -297,97 +306,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // function to complete the prompt
     function promptComplete() {
-        // pause the game
-        gameState = 'paused';
-        // Update the game status display
-        gameStatusDisplay.textContent = 'Completed';
-        // Hide the pause button
-        pauseGameButton.style.display = 'none';
-        // pause the game timer
-        pauseTimer();
+        // after half a second
+        setTimeout(() => {
+            // clear the options array
+            options.length = 0;
+            // pause the game
+            gameState = 'paused';
+            // Update the game status display
+            gameStatusDisplay.textContent = 'Completed';
+            // new wReset Word object
+            const wReset = new Word('reset', '!');
+            // new pReset Prompt object
+            const pReset = new Prompt(wReset);
+            // add the pReset to the game container
+            gameContainer.appendChild(pReset.div);
+            // push pReset to the options array
+            options.push(pReset);
+            // float the reset prompt with the resetGame function
+            pReset.float(resetGame);
+            // pause the game timer
+            pauseTimer();
+            // append the player input to the game container
+            gameContainer.appendChild(playerInput.form);
+            // focus on the player input
+            playerInput.input.focus();
+        }, 500);
     }
 
     // function to start the game
     function startGame() {
+        // Clear the game container
+        gameContainer.innerHTML = '';
         // Reset the game state
         gameState = 'playing';
         // Update the game status display
         gameStatusDisplay.textContent = 'Playing';
-        // Display the pause button
-        pauseGameButton.style.display = 'inline-block';
-        // Display the reset button
-        resetGameButton.style.display = 'inline-block';
         // create the typing prompt
         createTypingPrompt();
-        // Hide the start game button
-        startGameButton.style.display = 'none';
         // Start the game timer
         startTimer();
         // focus on the current word div
         //userInput.focus();
     }
 
-    // listen for click events on the start game button
-    startGameButton.addEventListener('click', () => {
-        // Call the startGame function
-        startGame();
-        
-        
-        
-    });
-
-    // listen for click events on the continue game button
-    continueGameButton.addEventListener('click', () => {
-        // Continue the game
-        gameState = 'playing';
-        gameStatusDisplay.textContent = 'Running';
-        // display the pause button
-        pauseGameButton.style.display = 'inline-block';
-        // display the reset button
-        resetGameButton.style.display = 'inline-block';
-        // Hide the continue game button
-        continueGameButton.style.display = 'none';
-        // Start the game timer
-        continueTimer();
-    });
-
-
-    // listen for click events on the pause game button
-    pauseGameButton.addEventListener('click', () => {
-        // Pause the game
-        gameState = 'paused';
-        // Update the game status display
-        gameStatusDisplay.textContent = 'Paused';
-        // Hide the pause button
-        pauseGameButton.style.display = 'none';
-        // Hide typing input
-        //typingInput.style.display = 'none';
-        // display the continue game button
-        continueGameButton.style.display = 'inline-block';
-        // Stop the game timer
-        pauseTimer();
-    });
-
-    // listen for click events on the reset game button
-    resetGameButton.addEventListener('click', () => {
-        // Reset the game
+    // function to reset the game
+    function resetGame() {
+        // Reset the game state
         gameState = 'paused';
         // Update the game status display
         gameStatusDisplay.textContent = 'Game reset';
-        // Hide the pause button
-        pauseGameButton.style.display = 'none';
-        // Hide the continue game button
-        continueGameButton.style.display = 'none';
-        // Hide the reset button
-        resetGameButton.style.display = 'none';
-        // display the start game button
-        startGameButton.style.display = 'inline-block';
         // remove the prompt div
         const currentPrompt = document.querySelector('.prompt');
         if (currentPrompt) currentPrompt.remove();
         // Reset the game timer
         resetTimer();
-    });
+        // displayscene0
+        displayScene0();
+    }
+
+    // Funtion to play the test sentence
+    function playTestSentence() {
+        // Clear the game container
+        gameContainer.innerHTML = '';
+        // Reset the game state
+        gameState = 'playing';
+        // Update the game status display
+        gameStatusDisplay.textContent = 'Playing';
+        // create new Sentence object with the test sentence
+        const sTest = Sentence.fromString(testSentence);
+        // Make a new Prompt object with the test sentence
+        const pTest = new Prompt(sTest);
+        // Add the pTest to the game container
+        gameContainer.appendChild(pTest.div);
+        // pTest is current
+        pTest.isCurrent().then(() => {
+            // complete the prompt
+            promptComplete();
+        });
+        // Start the game timer
+        startTimer();
+    }
 
     // call displayScene0 to show the initial scene
     displayScene0();

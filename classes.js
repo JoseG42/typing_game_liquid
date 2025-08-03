@@ -346,10 +346,14 @@ export class Prompt {
                     if (this.div.classList.contains("resolved")) {
                         // stop the interval
                         clearInterval(interval);
+                        // remove the floating class from the div
+                        this.div.classList.remove("floating");
                         resolve(this);
                     } else if (this.div.classList.contains('rejected')) {
                         // stop the interval
                         clearInterval(interval);
+                        // remove the floating class from the div
+                        this.div.classList.remove("floating");
                         //log `Prompt rejected: ${this.div.className}`
                         //console.log(`Prompt rejected: ${this.div.className}`),
                         // erase this.onResolve
@@ -454,7 +458,7 @@ export class GameInput {
 
         this.input = document.createElement("input");
         this.input.type = "text";
-        this.input.placeholder = "Type here...";
+        this.input.placeholder = "...";
         this.input.classList.add("game-input");
         parent.appendChild(this.form);
         this.form.appendChild(this.input);
