@@ -89,11 +89,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameStatusDisplay = document.querySelector('#game-status');
     // test div
     const testDiv = document.querySelector('.test-div');
+    // dateTimeGrid
+    const dateTimeGrid = document.createElement('div');
+    // set the class for the dateTimeGrid
+    dateTimeGrid.classList.add('date-time-grid');
     // date block
-    const dateBlock = document.getElementById('date-block');
+    const dateBlock = document.createElement('b');
+    dateBlock.id = 'date-block';
+    // append the date block to the dateTimeGrid
+    dateTimeGrid.appendChild(dateBlock);
     // time block
-    const timeBlock = document.getElementById('time-block');
-
+    const timeBlock = document.createElement('b');
+    timeBlock.id = 'time-block';
+    // append the time block to the dateTimeGrid
+    dateTimeGrid.appendChild(timeBlock);
     // format the date to YYYY-MM-DD
     const formattedDate = new Date().toISOString().split('T')[0];
     // set the text content of the date block
@@ -120,9 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerInput = new GameInput(gameContainer);
     // input handler
     const inputHandler = (e) => {
-        // if the input value is enter
-        playerInput.submit.onclick = (clickEvent) => {
-            clickEvent.preventDefault();
+        // if the enter key is pressed in the text area
+        if (e.keyCode === 13) {
+            // log 'enter pressed' to the console
+            console.log('Enter pressed');
+            e.preventDefault();
             try {
                 // log 'Input value: Enter' to the console
                 //console.log('Input value: Enter');
@@ -152,7 +163,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 // log any errors to the console
                 console.error('Error querying floating prompt:', error);
             }
+
         }
+        // playerInput.submit.onclick = (clickEvent) => {
+        //     clickEvent.preventDefault();
+        //     try {
+        //         // log 'Input value: Enter' to the console
+        //         //console.log('Input value: Enter');
+        //         // query the first prompt with the floating class
+        //         const floatingPrompt = document.querySelector('.floating');
+        //         // if the floating prompt exists
+        //         if (floatingPrompt) {
+        //             // select the floating prompt
+        //             selection = floatingPrompt;
+        //             // log the floating prompt
+        //             console.log('Floating prompt found:', floatingPrompt);
+        //             // clear the input value
+        //             playerInput.input.value = '';
+        //             // resolve the floating prompt
+        //             floatingPrompt.classList.add('resolved');
+        //             // reject all other prompts
+        //             options.forEach(opt => {
+        //                 if (opt.div !== floatingPrompt) {
+        //                     opt.div.classList.add('rejected');
+        //                 }
+        //             });
+        //         } else {
+        //             // log an error if no floating prompt is found
+        //             console.error('No floating prompt found');
+        //         }
+        //     } catch (error) {
+        //         // log any errors to the console
+        //         console.error('Error querying floating prompt:', error);
+        //     }
+        // }
         const value = e.target.value.toLowerCase();
         options.forEach(opt =>{
             // console.log(opt.div.className);
@@ -164,16 +208,65 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`Input value: ${e.target.value}`);
     }
     // add the input event listener to the playerInput
-    playerInput.input.addEventListener('input', inputHandler);
+    playerInput.textArea.addEventListener('input', inputHandler);
     // array of options
     const options = [];
+    // add an event listener to the window for the 'keydown' event
+    window.addEventListener('keydown', (event) => {
+        // check if the key pressed is 'Enter'
+        if (event.key === 'Enter' || event.keyCode === 13) {
+            // log 'enter pressed' to the console
+            console.log('Enter pressed');
+            try {
+                // log 'Input value: Enter' to the console
+                //console.log('Input value: Enter');
+                // query the first prompt with the floating class
+                const floatingPrompt = document.querySelector('.floating');
+                // if the floating prompt exists
+                if (floatingPrompt) {
+                    // select the floating prompt
+                    selection = floatingPrompt;
+                    // log the floating prompt
+                    console.log('Floating prompt found:', floatingPrompt);
+                    // clear the text area value
+                    playerInput.textArea.value = null;
+                    // resolve the floating prompt
+                    floatingPrompt.classList.add('resolved');
+                    // reject all other prompts
+                    options.forEach(opt => {
+                        if (opt.div !== floatingPrompt) {
+                            opt.div.classList.add('rejected');
+                        }
+                    });
+                } else {
+                    // log an error if no floating prompt is found
+                    console.error('No floating prompt found');
+                }
+            } catch (error) {
+                // log any errors to the console
+                console.error('Error querying floating prompt:', error);
+            }
+        }
+    });
 
     //function to display scene0
     function displayScene0() {
         // Clear the game container
         gameContainer.innerHTML = '';
-        // append the player input form to the game container
-        gameContainer.appendChild(playerInput.form);
+        //variable for the title
+        let title = document.createElement('h1');
+        // title is 'TRPG'
+        title.textContent = 'TRPG';
+        // append the title to the game container
+        gameContainer.appendChild(title);
+        // variable for the subtitle
+        let subtitle = document.createElement('h2');
+        // subtitle is 'A Typing Role Playing Game'
+        subtitle.textContent = 'A Typing Role Playing Game';
+        // append the subtitle to the game container
+        gameContainer.appendChild(subtitle);
+        // display the dateTimeGrid
+        gameContainer.appendChild(dateTimeGrid);
         // Make a 'wStart' Word object
         const wStart = new Word('start');
         // Make a 'wGame' Word object
@@ -196,8 +289,10 @@ document.addEventListener('DOMContentLoaded', () => {
         pTestSentence.float(playTestSentence);
         // push pStartGame, pTestSentence to the options array
         options.push(pStartGame, pTestSentence);
-        // focus on the player input
-        playerInput.input.focus();
+        // append the player input form to the game container
+        gameContainer.appendChild(playerInput.form);
+        // focus on the text area
+        playerInput.textArea.focus();
 
     }
 
@@ -329,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // append the player input to the game container
             gameContainer.appendChild(playerInput.form);
             // focus on the player input
-            playerInput.input.focus();
+            playerInput.textArea.focus();
         }, 500);
     }
 

@@ -456,16 +456,15 @@ export class GameInput {
         this.submit.style.display = "none";
         // add a class to the form
 
-        this.input = document.createElement("input");
-        this.input.type = "text";
-        this.input.placeholder = "...";
-        this.input.classList.add("game-input");
+        this.textArea = document.createElement("textarea");
+        this.textArea.placeholder = "...";
+        this.textArea.classList.add("game-input");
         parent.appendChild(this.form);
-        this.form.appendChild(this.input);
+        this.form.appendChild(this.textArea);
         this.form.appendChild(this.submit);
 
         // this.handleInput;
-        // this.input.addEventListener("input", this.handleInput);
+        // this.textArea.addEventListener("input", this.handleInput);
         //console.log(`Input value: ${event.target.value}`);
         
     }
