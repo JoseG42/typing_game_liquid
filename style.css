@@ -29,9 +29,23 @@ body {
     aspect-ratio: 1.618;
     border-radius: .6vw;
     display: grid;
-    background-color: #2b0000;
+    grid-template-rows: repeat(auto-fit, minmax(1vw, 100%));
+    grid-template-columns: repeat(auto-fit, 100%);
+    /* display: flex;
+    flex-direction: column; */
+    justify-content: center;
+    align-content: center;
+    justify-items: center;
+    align-items: center;
+    background-color: #1d0000;
     color: #ffdada;
 
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
 }
 
 /* date-time-grid */
@@ -59,51 +73,108 @@ body {
 
 /* Prompts */
 .prompt {
-    margin: .3vw;
-    height: fit-content;
-    width: fit-content;
     aspect-ratio: 1.618;
-    border: .3vw solid #8d0000;
+    margin: .3vw;
+    /* width: min-content;
+    height: min-content;
+    max-height: max-content; */
+    min-height: 2rem;
+    height: stretch;
+    min-width: min-content;
+    /* width: min-content; */
+    border: .3vw solid #4b0000;
     padding: .5rem;
+    /* display: grid;
+    grid-template-columns: repeat(auto-fit, min-content);
+    grid-template-rows: repeat(auto-fit, min-content);
+    grid-auto-flow: row; */
     display: flex;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-content: center;
     justify-items: center;
     align-items: center;
-    font-size: 2rem;
+    container-type: size;
+    container-name: promptcont;
+}
+
+@container promptcont (max-width: 89vw) {
+    .sentence {
+        font-size: clamp(1rem, 4cqw, 5vw);
+    }
+    /* text-align: center; */
+    /* align-items: center; */
+    /* justify-items: center; */
+}
+
+@container promptcont (max-width: 78vw) {
+    .sentence {
+        font-size: clamp(1rem, 4cqw, 5vw);
+    }
+    /* text-align: center; */
+    /* align-items: center; */
+    /* justify-items: center; */
+}
+
+@container promptcont (max-width: 20vw) {
+    .sentence, .word {
+        font-size: clamp(1rem, 10cqw, 100cqw);
+    }
+    /* text-align: center; */
+    /* align-items: center; */
+    /* justify-items: center; */
 }
 
 /* Sentences */
-.sentence {
+.sent {
+    min-width: fit-content;
+    height: stretch;
+    width: min-content;
+    aspect-ratio: 1.618;
+    /* display: grid;
+    grid-template-columns: repeat(auto-fit, min-content);
+    grid-template-rows: repeat(auto-fit, min-content);
+    grid-auto-flow: row; */
     display: flex;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-content: center;
+    justify-items: center;
+    align-items: center;
+    /* font-size: clamp(1rem, 170%, 5vw); */
 }
 
 /* Words */
 .word {
-    margin-right: 1rem;
+    min-height: fit-content;
+    min-width: fit-content;
+    width: fit-content;
+    height: fit-content;
+    margin-right: .6rem;
     display: flex;
 }
 
-/* Input Field */
-input {
-    min-height: fit-content;
-    min-width: fit-content;
-    height: fit-content;
-    width: fit-content;
-    aspect-ratio: 1.618;
-    text-wrap: wrap;
-}
 
 textarea {
-    height: fit-content;
-    width: fit-content;
+    height: min-content;
+    width: min-content;
     aspect-ratio: 1.618;
     text-wrap: wrap;
     font-family: 'Courier New', Courier, monospace;
     font-size: 1rem;
     padding: .5rem;
-    border: .2rem solid #8d0000;
+    border: .2rem solid #4b0000;
     border-radius: .3rem;
+    background-color: #1d0000;
+    color: #ff9191;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #8d0000;
+    box-shadow: 0 0 1rem #8d0000;
+    background-color: #2b0000;
+    color: #ffdada
 }
 
 /* Style for the correct class */
@@ -115,4 +186,22 @@ textarea {
 .incorrect {
     color: #dc3545; /* Red for incorrect words */
     font-weight: bold;
+}
+
+/* Style for game info */
+.game-info {
+    margin-top: 20px;
+    text-align: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+    flex: 1 1 0%;
+}
+
+/* Style for the game status */
+#game-status {
+    font-size: 18px;
+    font-weight: bold;
+    color: #6f0707;
+    background-color: #ff5c5c;
 }

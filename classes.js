@@ -1,512 +1,474 @@
-// Make a Letter class
 export class Char {
-    constructor(char) {
-        this.char = char;
-        // Char is a div element
-        this.div = document.createElement("div");
-        this.div.textContent = char;
-        this.div.tabIndex = 0; // Make the div focusable
+    // Each Char is a single character
+
+    // The constructor takes a single character as input
+    constructor(letter) {
+        this.letter = letter || ' '; // default to space if no letter provided
+        // new div element
+        this.div = document.createElement('div');
+        // add the char class
+        this.div.classList.add('char');
+        // set the text content to the letter
+        this.div.textContent = letter;
+        // assign this Char instance to the div
+        this.div.charInstance = this;
     }
 
-    //Method to get the letter
-    getLetter() {
-        return this.char;
-    }
-
-    //Method to make the letter correct
-    correct() {
-        this.div.classList.add("correct");
-    }
-
-    // Method to append the letter to a parent element
-    appendTo(parent) {
-        parent.appendChild(this.div);
-    }
-
-    // Method to make the character incorrect
-    incorrect() {
-        this.div.classList.add("incorrect");
-    }
-
-    // Method to make the character current
-    isCurrent() {
+    // Async method to make the char current
+    async isCurrent(timer = null) {
+        // add the 'current' class to the char div
+        this.div.classList.add('current');
+        // return a new Promise
         return new Promise((resolve, reject) => {
-            // focus the div element
-            this.div.focus();
-            // if the div has the incorrect class, reject the promise
-            if (this.div.classList.contains("incorrect")) {
-                reject(
-                    // remove the current class from the div
-                    this.div.classList.remove("current"),
-                    'rejected at isCurrent method of Char class'
+            // If the char is already incorrect, resolve the promise
+            if (this.div.classList.contains('incorrect')) {
+                resolve(
+                    this.div.classList.remove('current')
                 );
+                return;
             }
-            // define the handler
-            const handler = (event) => {
-                if (event.key === this.char) {
-                    this.correct();
-                    document.removeEventListener("keydown", handler);
+            // define the keydown event listener
+            const kDEvent = (e) => {
+                // If startTime is not set, set it to the current time
+                if (timer && timer.startTime === 'waiting') {
+                    timer.startSWatch();
+                    // log start time
+                    console.log('char',timer);
+                }
+                // If e key matches this.letter
+                if (e.key === this.letter) {
+                    // Resolve the promise
                     resolve(
-                        // remove the current class from the div
-                        this.div.classList.remove("current")
+                        // Remove the 'current' class
+                        this.div.classList.remove('current'),
+                        // Add the 'correct' class
+                        this.div.classList.add('correct'),
                     );
-                } else if (event.key === ' ') {
-                    // select all remaining characters
-                    const remainingChars = Array.from(this.div.parentNode.children).filter(child => !child.classList.contains("correct"));
-                    remainingChars.forEach(char => char.classList.add("incorrect", 'skipped'));
-                    document.removeEventListener("keydown", handler);
+                    // Remove the event listener
+                    document.removeEventListener('keydown', kDEvent);
+                }// else if e key is 'shift'
+                else if (e.key === 'Shift') {
+                    // add a one time keydown listener for the next key
+                    const shiftEvent = (ev) => {
+                        // If ev key matches this.letter in lowercase
+                        if (ev.key === this.letter.toLowerCase()) {
+                            // Resolve the promise
+                            resolve(
+                                // Remove the 'current' class
+                                this.div.classList.remove('current'),
+                                // Add the 'correct' class
+                                this.div.classList.add('correct')
+                            );
+                            // Remove the event listener
+                            document.removeEventListener('keydown', shiftEvent);
+                        } else {
+                            // Resolve the promise
+                            resolve(
+                                // Remove the 'current' class
+                                this.div.classList.remove('current'),
+                                // Add the 'incorrect' class
+                                this.div.classList.add('incorrect')
+                            );
+                        }
+                    };
+                    // Add the keydown event listener
+                    document.addEventListener('keydown', shiftEvent, { once: true });
+                }// else if e key is 'space' and this.letter is not a space
+                else if (e.key === ' ' && this.letter !== ' ') {
+                    // get all remaining chars in the parent word
+                    let parentWord = this.div.parentElement;
+                    let remainingChars = Array.from(parentWord.querySelectorAll('.char')).filter(c => !c.classList.contains('correct') && !c.classList.contains('incorrect'));
+                    console.log('skipping', remainingChars);
+                    // Mark all remaining chars as incorrect
+                    for (let c of remainingChars) {
+                        c.classList.remove('current');
+                        c.classList.add('incorrect');
+                    }
+                    // add the 'skipped' class to the parent word
+                    parentWord.classList.add('skipped');
+                    // Resolve the promise
                     resolve(
-                        // remove the current class from the div
-                        this.div.classList.remove("current"),
-                        // add the skipped class to the parent div
-                        this.div.parentNode.classList.add("skipped")
+                        // Remove the 'current' class
+                        this.div.classList.remove('current')
                     );
                 } else {
-                    this.incorrect();
-                    document.removeEventListener("keydown", handler);
+                    // Resolve the promise
                     resolve(
-                        // remove the current class from the div
-                        this.div.classList.remove("current")
+                        // Remove the 'current' class
+                        this.div.classList.remove('current'),
+                        // Add the 'incorrect' class
+                        this.div.classList.add('incorrect')
                     );
                 }
-            };
-            // add keydown event listener to the document
-            document.addEventListener("keydown", handler, { once: true });
-            
-            // store the number of .correct characters
-            let correctChars = document.querySelectorAll('.correct').length;
-            // store the number of .incorrect characters
-            let incorrectChars = document.querySelectorAll('.incorrect').length;
-            // calculate the accuracy
-            let accuracy = (correctChars / (correctChars + incorrectChars)) * 100;
-            // get an element with id 'accuracy'
-            const accuracyElement = document.getElementById('accuracy');
-            accuracyElement.textContent = `${accuracy.toFixed(2)}%`;
-            // log correct, incorrect and total characters
-            // console.log(`Correct characters: ${correctChars}`);
-            // console.log(`Incorrect characters: ${incorrectChars}`);
-            // console.log(`Total characters: ${correctChars + incorrectChars}`);
+            }
+            // Add the keydown event listener
+            document.addEventListener('keydown', kDEvent, { once: true });
         });
     }
 }
 
-// Make a special Char class for space
-export class SpecChar {
-    constructor(char = null) {
-        this.char = char || " "; // Default to space if no char is provided
-        // Char is a div element
-        this.div = document.createElement("div");
-        this.div.textContent = this.char;
-        this.div.classList.add("space");
-        this.div.tabIndex = 0; // Make the div focusable
-    }
-
-    // Method to append the space to a parent element
-    appendTo(parent) {
-        parent.appendChild(this.div);
-    }
-
-    // Method to make the Special character current
-    isCurrent() {
-        // new Promise
-        return new Promise((resolve, reject) => {
-            // focus the div element
-            this.div.focus();
-            // if the div has the incorrect class, reject the promise
-            if (this.div.classList.contains("incorrect")) {
-                reject(
-                    // remove the current class from the div
-                    this.div.classList.remove("current")
-                );
-            }
-            // define the handler
-            const handler = (event) => {
-                if (event.key === this.char) {
-                    this.div.classList.add("correct");
-                    document.removeEventListener("keydown", handler);
-                    resolve(
-                        // remove the current class from the div
-                        this.div.classList.remove("current")
-                    );
-                } else {
-                    this.div.classList.add("incorrect");
-                    document.removeEventListener("keydown", handler);
-                    resolve(
-                        // remove the current class from the div
-                        this.div.classList.remove("current")
-                    );
-                }
-            }
-            // add keydown event listener to the document
-            document.addEventListener("keydown", handler, { once: true });
-        });
-    }
-}
-
-//Make a word class
 export class Word {
-    constructor(word, split) {
-        this.word = word;
-        this.split = split || ' '; // Default split character is space
-        // Array to hold the characters of the word
-        this.characters = [];
-        // Word is a div element
-        this.div = document.createElement("div");
-        this.div.classList.add("word");
-        // for each character in the word, create a Char object
-        for (let char of word) {
-            const charObj = new Char(char);
-            this.characters.push(charObj);
-            charObj.appendTo(this.div);
+    // Each Word is a collection of Chars
+
+    // The constructor takes a string and an optional split character as input
+    constructor(term, split) {
+        this.term = term;
+        // Default split is a space
+        this.split = split || ' ';
+        // characters array
+        this.chars = [];
+        // this div new div element
+        this.div = document.createElement('div');
+        // add the word class
+        this.div.classList.add('word');
+        // For each character in the term, create a Char object and add it to the chars array
+        for (let c of term) {
+            // Create a new Char object
+            let char = new Char(c);
+            // Add the Char object to the chars array
+            this.chars.push(char);
+            // Append the Char's div to the Word's div
+            this.div.appendChild(char.div);
         }
-        // make the split character a special Char object
-        if (this.split) {
-            const splitChar = new SpecChar(this.split);
-            this.characters.push(splitChar);
-            splitChar.appendTo(this.div);
-        }
-
+        // After all chars are created, add a split Char if needed
+        let splitChar = new Char(this.split);
+        // Append the split Char's div to the Word's div
+        this.div.appendChild(splitChar.div);
+        // Add the split Char to the chars array
+        this.chars.push(splitChar);
+            
+        
     }
 
-    //Method to get the word
-    getWord() {
-        return this.word;
-    }
-
-    // Method to append the word to a parent element
-    appendTo(parent) {
-        parent.appendChild(this.div);
-    }
-
-    // Method 'isCurrent'
-    isCurrent() {
-        // new Promise
+    // Async method to make the word current
+    async isCurrent(timer = null) {
+        // add the 'current' class to the word div
+        this.div.classList.add('current');
+        // return a new Promise
         return new Promise(async (resolve, reject) => {
-            try {
-                // for char of characters
-                for (let char of this.characters) {
-                    // add the current class to the character's div
-                    char.div.classList.add("current");
-                    // call the isCurrent method on each Char object
+            // For each char in this.chars
+            for (let char of this.chars) {
+                // If startTime is not set, pass it to isCurrent
+                if (timer) {
+                    // log start time
+                    console.log(timer);
+                    await char.isCurrent(timer)
+                } else {
                     await char.isCurrent();
                 }
-                // resolve after all characters are processed
-                resolve(
-                    // remove the current class from the div
-                    this.div.classList.remove("current"),
-                    // add the typed class to the div
-                    this.div.classList.add("typed"),
-                );
-                // if the word becomes skipped, reject the promise
-                if (this.div.classList.contains("skipped")) {
-                    reject(
-                        // remove the current class from the div
-                        this.div.classList.remove("current")
-                    );
-                }
-            } catch (error) {
-                // if an error occurs, reject the promise
-                reject(error);
             }
+            // If the word becomes skipped, resolve the promise
+            if (this.div.classList.contains('skipped')) {
+                resolve(
+                    this.div.classList.remove('current')
+                );
+                return;
+            }
+            // Resolve the promise
+            resolve(
+                // Remove the 'current' class from the word div
+                this.div.classList.remove('current'),
+                // add the 'typed' class to the word div
+                this.div.classList.add('typed')
+            );
+        }).catch((err) => {
+            console.error('Error in Word.isCurrent:', err);
         });
     }
 }
 
-// Make a sentence class
 export class Sentence {
-    // Constructor should take any number of Word, Char, or SpecChar objects
+    // Each Sentence is a string of words and other characters
+
+    // The constructor takes a variable number of objects as input
     constructor(...objects) {
-        this.words = [];
-        this.div = document.createElement("div");
-        this.div.classList.add("sentence");
+        // array of objects (Words, chars, etc.)
+        this.objects = objects;
+        // new div element
+        this.div = document.createElement('div');
+        // add 'sent' class
+        this.div.classList.add('sent');
+        // For each object, append its div to the Sentence's div
         for (let obj of objects) {
-            if (obj instanceof Word || obj instanceof Char || obj instanceof SpecChar) {
-                this.words.push(obj);
+            // If the object is a Word or Char, append its div
+            if (obj instanceof Word || obj instanceof Char) {
                 this.div.appendChild(obj.div);
             }
         }
     }
 
-    // Method to get words from a string
-    static fromString(sentenceString, split = ' ') {
-        // Split the sentence string into words
-        const wordsArray = sentenceString.split(split);
-        // Map the words to Word objects
-        const wordObjects = wordsArray.map(word => new Word(word));
-        // Create a new Sentence object
-        return new Sentence(...wordObjects);
+    // Method to make the sentence from a string
+    static fromString(str) {
+        // Split the string into words based on spaces
+        let words = str.split(' ').map(word => new Word(word, ' '));
+        // Create a Sentence from the Word objects
+        return new Sentence(...words);
     }
 
     // Method to add a Word object to the sentence
     addWord(word) {
-        this.words.push(word);
-        word.appendTo(this.div);
+        this.objects.push(word);
+        this.div.appendChild(word.div);
     }
 
-    // Method to get the sentence
-    getSentence() {
-        return this.words.map(word => word.getWord()).join(" ");
-    }
 
-    // Method to make the sentence current
-    async isCurrent() {
-        // new Promise
-        return new Promise(async (resolve, reject) => {
-            // for word of words
-          for (let word of this.words) {
-              // add the current class to the word's div
-              word.div.classList.add("current");
-              try {
-                  // call the isCurrent method on each Word object
-                  await word.isCurrent();
-              } catch (error) {
-                  // remove the current class from the word's div
-                  word.div.classList.remove("current");
-              }
-          }
-          // resolve after all words are processed
-          resolve(
-              // remove the current class from the div
-              this.div.classList.remove("current")
-          );
-
-        });
-
-        // complete prompt
-        //promptComplete();
-    }
-}
-
-// Make a prompt class
-export class Prompt {
-  // Constructor takes any number of objects that may be Sentence, Word, Char, or SpecChar
-  constructor(...objects) {
-        this.all = [];
-        this.div = document.createElement("div");
-        // totalWords
-        this.totalWords = 0;
-        for (let obj of objects) {
-            if (obj instanceof Sentence) {
-                // push to all
-                this.all.push(obj);
-                // add the number of words to totalWords
-                this.totalWords += obj.words.length;
-                //appendChild
-                this.div.appendChild(obj.div);
-            } else if (obj instanceof Word) {
-                // push to all
-                this.all.push(obj);
-                // add one to totalWords
-                this.totalWords += 1;
-                // add the word as a class to the div
-                this.div.classList.add(obj.getWord())
-                // appendChild
-                this.div.appendChild(obj.div);
-            } else if (obj instanceof Char || obj instanceof SpecChar) {
-                // push to all
-                this.all.push(obj);
-                // add one to totalWords
-                this.totalWords += 1;
-                // add the character as a class to the div
-                this.div.classList.add(obj.char)
-                // appendChild
-                this.div.appendChild(obj.div);
-            }
-        }
-        this.div.classList.add("prompt");
-        // typedWords
-        this.typedWords = 0;
-        //WPM
-        this.wpm = 0;
-        // prompts should have a function to call when the prompt is resolved
-        this.onResolve = null;
-    }
-
-    // Method to calculate and log the total words in the prompt
-    logTotalWords() {
-        console.log(`Total words in prompt: ${this.totalWords}`);
-    }
-
-    
-
-
-    // async Method to float the prompt accepts a function that is calledback when the prompt is resolved
-    async float(onResolve) {
-        // store the onResolve function
-        this.onResolve = onResolve;
-        // add the floating class to the div
-        this.div.classList.add("floating");
+    // Async method to make the sentence current
+    async isCurrent(timer = null) {
+        // add the 'current' class to the sentence div
+        this.div.classList.add('current');
         // Await a new Promise
-        //let interval;
-        try {
-            await new Promise((resolve, reject) => {
-                // at an interval
-                const interval = setInterval(() => {
-                    // if the div has the 'resolved' class, resolve the promise immediately
-                    if (this.div.classList.contains("resolved")) {
-                        // stop the interval
-                        clearInterval(interval);
-                        // remove the floating class from the div
-                        this.div.classList.remove("floating");
-                        resolve(this);
-                    } else if (this.div.classList.contains('rejected')) {
-                        // stop the interval
-                        clearInterval(interval);
-                        // remove the floating class from the div
-                        this.div.classList.remove("floating");
-                        //log `Prompt rejected: ${this.div.className}`
-                        //console.log(`Prompt rejected: ${this.div.className}`),
-                        // erase this.onResolve
-                        this.onResolve = null;
-                        // resolve the promise
-                        resolve(this);
-                    }
-
-                }, 17);// 60 FPS
+        return new Promise(async (resolve, reject) => {
+            // For each object in this.objects
+            for (let obj of this.objects) {
+                // If startTime is not set, pass it to isCurrent
+                if (timer) {
+                    // log start time
+                    console.log(timer);
+                    await obj.isCurrent(timer);
+                } else {
+                    await obj.isCurrent();
+                }
+            }
+            // Resolve the promise
+            resolve(
+                // Remove the 'current' class from the sentence div
+                this.div.classList.remove('current')
+            );
+        }).catch((err) => {
+            console.error('Error in Sentence.isCurrent:', err);
         });
-        // stop the interval
-        //clearInterval(interval);
-        } catch (error) {
-            //stop the interval
-            //clearInterval(interval);
-            // log the error
-            console.error('Error in float method:', error);
-        }
-        // if the onResolve function is provided, call it
-        if (this.onResolve) {
-            this.onResolve(this);
-        }
-        // if thisdiv has the floating class and not the hidden class and there is only one floating prompt
-
-        // // return a new Promise
-        // return new Promise((resolve) => {
-        //     // if thisdiv has the floating class and not the hidden class and there is only one floating prompt
-        //     if (this.div.classList.contains("floating") && !this.div.classList.contains("hidden") && document.querySelectorAll('.floating').length === 1) {
-        //         // log 'listening for keydown event'
-        //         console.log('Listening for keydown event on prompt:', this);
-        //         // eventListener for a one time keydown event
-        //         let handler = (event) => {
-        //             // if the key is Enter
-        //             if (event.key === "Enter") {
-        //                 // remove the floating class from the div
-        //                 this.div.classList.remove("floating");
-        //                 // resolve the promise
-        //                 resolve(
-        //                     // log the prompt
-        //                     console.log('Prompt selected:', this)
-        //                 );
-        //             }
-        //         };
-        //         // add the event listener
-        //         document.addEventListener("keydown", handler, { once: true });
-        //     } else if (!this.div.classList.contains("floating") && this.div.classList.contains("hidden")) {
-        //         // resolve the promise immediately
-        //         resolve(this);
-        //     }
-        // });
     }
 
-    // Method to make the prompt current
-    async isCurrent() {
-      // store the start time
-        const startTime = Date.now();
-        // for sentence of sentences
-        for (let sentence of this.all) {
-            // add the current class to the sentence's div
-            sentence.div.classList.add("current");
-            try {
-                // call the isCurrent method on each Sentence object
-                await sentence.isCurrent();
-            } catch (error) {
-                // remove the current class from the sentence's div
-                sentence.div.classList.remove("current");
+}
+
+export class Prompt {
+    // Each Prompt contains any number of objects (Words, Sentences, etc.)
+
+    // The constructor takes a variable number of objects as input
+    constructor(...objects) {
+        // Timer object (optional)
+        this.timer = new Timer();
+        // array of objects (Words, Sentences, etc.)
+        this.objects = objects;
+        // new div element
+        this.div = document.createElement('div');
+        // add 'prompt' class
+        this.div.classList.add('prompt');
+        // total word count
+        this.wordCount = 0;
+        // Typed Word count
+        this.typedWordCount = 0;
+        // WPM
+        this.wpm = 0;
+        // end time
+        this.endTime = null;
+        // For each object
+        for (let obj of objects) {
+            // If its a Sentence
+            if (obj instanceof Sentence) {
+                // Append the Sentence's div to the Prompt's div
+                this.div.appendChild(obj.div);
+                // add the number of words to wordCount
+                this.wordCount += obj.objects.filter(o => o instanceof Word).length;
+
+            } else if (obj instanceof Word) {
+                // If its a Word, append its div
+                this.div.appendChild(obj.div);
+                // add the number of words to wordCount
+                this.wordCount += 1;
+            } else if (obj instanceof Char) {
+                // If its a Char, append its div
+                this.div.appendChild(obj.div);
             }
         }
-        // store the end time
-        const endTime = Date.now();
-        // calculate the time taken
-        const timeTaken = endTime - startTime;
-        // calculate the typedWords
-        this.typedWords = this.div.querySelectorAll('.typed').length;
-        // calculate the WPM
-        this.wpm = Math.round((this.typedWords / (timeTaken / 60000)) * 100) / 100; // Round to two decimal places
-        // get an element with id 'typing-speed'
-        const typingSpeedElement = document.getElementById('typing-speed');
-        // set the text content of the element to the WPM
-        typingSpeedElement.textContent = this.wpm;
-        // log the time taken
-        console.log(`Time taken: ${timeTaken} ms`);
-        // store timeTaken as a property
-        this.timeTaken = timeTaken;
-        // return both wpm and timeTaken as an object
-        return { wpm: this.wpm, timeTaken: this.timeTaken };
+    }
+
+    // Async method to float the prompt
+    async float(callback) {
+        // Add the 'float' class to the prompt div
+        this.div.classList.add('float');
+        // Await a new Promise
+        await new Promise((resolve, reject) => {
+            // Add a keydown listener to the window
+            window.addEventListener('keydown', (event) => {
+                // if event.key is 'Enter'
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                }
+                if (event.key === 'Enter' 
+                    && this.div.classList.contains('float') 
+                    && !this.div.classList.contains('hiden') 
+                    && document.querySelectorAll('.float').length < 2) {
+                    // Resolve the promise
+                    resolve();
+                    // get the pinput textarea
+                    let pInput = document.querySelector('.pInput');
+                    // Nullify the pInput
+                    pInput.value = '';
+
+                } else if (event.key === 'Enter' 
+                    && !this.div.classList.contains('float') 
+                    && this.div.classList.contains('hiden') 
+                    && document.querySelectorAll('.float').length < 2) {
+                    // Nullify the callback
+                    callback = null;    
+                    // Resolve the promise
+                    resolve();
+                }
+            });
+        }).then(() => {
+            // Call the callback if provided
+            if (callback) {
+                callback();
+            }
+
+        }).catch((err) => {
+            console.error('Error in float:', err);
+        });
+    }
+
+    // Async method to make the prompt current
+    async isCurrent(callback) {
+        // Add the 'current' class to the prompt div
+        this.div.classList.add('current');
+        // Await a new Promise
+        await new Promise(async (resolve, reject) => {
+            // for obj in this.objects
+            for (let obj of this.objects) {
+                // If startTime is not set
+                if (this.timer.startTime === 'waiting') {
+                    // log start time
+                    //console.log(startTime);
+                    await obj.isCurrent(this.timer);
+                } else {
+                    await obj.isCurrent();
+                }
+            }
+            // Resolve the promise
+            resolve(
+                // Set the end time
+                this.timer.stopSWatch(),
+            );
+        }).then(() => {
+            // Remove the 'current' class from the prompt div
+            this.div.classList.remove('current');
+            // Add the 'complete' class to the prompt div
+            this.div.classList.add('complete');
+            // Calculate the active time in seconds
+            let seconds = (this.timer.tElapsed) / 1000;
+            // Calculate typed word count
+            this.typedWordCount = this.div.querySelectorAll('.word.typed').length;
+            // Calculate WPM
+            this.wpm = Math.round((this.typedWordCount / seconds) * 60) || 0;
+            // Log WPM
+            console.log(`WPM: ${this.wpm}, Typed Words: ${this.typedWordCount}, Total Words: ${this.wordCount}, Time: ${seconds.toFixed(2)}s`);
+            // Calculate accuracy
+            let correctChars = this.div.querySelectorAll('.char.correct').length;
+            let incorrectChars = this.div.querySelectorAll('.char.incorrect').length;
+            this.accuracy = Math.round((correctChars / (correctChars + incorrectChars)) * 100) || 0;
+            // Log accuracy
+            console.log(`Accuracy: ${this.accuracy}%`);
+
+            // Call the callback if provided
+            if (callback) {
+                callback();
+            }
+        }).catch((err) => {
+            console.error('Error in Prompt.isCurrent:', err);
+        });
     }
 }
 
-// Make a GameInput class
-export class GameInput {
-    constructor(parent) {
-        // What if it's a form? Can I use the submit event?
-        this.form = document.createElement("form");
-        this.submit = document.createElement("input");
-        this.submit.type = "submit";
-        this.submit.value = "Submit";
-        this.form.onsubmit
-        // hide the submit button
-        this.submit.style.display = "none";
-        // add a class to the form
+export class PInput {
+    // PInput handles user input for the typing game
 
-        this.textArea = document.createElement("textarea");
-        this.textArea.placeholder = "...";
-        this.textArea.classList.add("game-input");
-        parent.appendChild(this.form);
-        this.form.appendChild(this.textArea);
-        this.form.appendChild(this.submit);
+    constructor() {
+        this.textarea = document.createElement('textarea');
+        this.textarea.classList.add('pInput');
+        this.textarea.setAttribute('autocomplete', 'off');
+        this.textarea.setAttribute('autocorrect', 'off');
+        this.textarea.setAttribute('autocapitalize', 'off');
+        this.textarea.setAttribute('spellcheck', 'false');
+        this.textarea.placeholder = '...';
+    }
 
-        // this.handleInput;
-        // this.textArea.addEventListener("input", this.handleInput);
-        //console.log(`Input value: ${event.target.value}`);
+
+    // Method to attach the input handler to filter options
+    attachOptionsFilter(options) {
+        // Add an input event listener to the textarea
+        this.textarea.addEventListener('input', (e) => {
+            const value = e.target.value.toLowerCase();
+            options.forEach(opt =>{
+                // console.log(opt.div.className);
+                const isVisible = opt.div.textContent.includes(value)
+                opt.div.classList.toggle("hidden", !isVisible);
+                opt.div.classList.toggle("float", isVisible);
+            });
+        });
+    }
+}
+
+export class Timer {
+    // Timers handle any countdowns and time tracking
+
+    constructor(seconds) {
+        this.duration = seconds || 0; // default to 0 seconds
+        this.remaining = null;
+        this.startTime = 'waiting';
+        this.endTime = null;
+        this.tElapsed = null;
+        this.laps = [];
+    }
+
+    // Start stopwatch
+    startSWatch() {
+        this.startTime = Date.now();
+        this.lapStartTime = this.startTime;
+    }
+
+    // Pause stopwatch
+    pauseSWatch() {
+        this.pauseTime = Date.now();
+        // store the time elapsed
+        this.tElapsed = this.pauseTime - this.startTime;
         
     }
-    // Method to handle input events
-    handleInput(array) {
-        // const options
-        // // for each prompt in the array
-        // array.forEach(prompt => {
-        //     // log the prompt
-        //     console.log(`Prompt: ${prompt}`);
-        //     prompt.all.forEach(obj => {
-        //         // log the object
-        //         console.log(`Object: ${obj}`);
-        //         // if obj is a Sentence
-        //         if (obj instanceof Sentence) {
-        //             obj.words.forEach(word => {
-        //                 // log the word
-        //                 console.log(`Word: ${word.getWord()}`);
-        //                 // push the word to the opt array
-        //                 opt.push(word.getWord());
-        //             });
-        //         } else if (obj instanceof Word) {
-        //             // log the word
-        //             console.log(`Word: ${obj.getWord()}`);
-        //             // push the word to the opt array
-        //             opt.push(obj.getWord());
-        //         }
-        //     });
-        // });
-        // // each opt needs the prompt object and all words inside it
 
-        // add event listener for input
-        // this.input.addEventListener("input", (e) => {
-        //     const value = e.target.value.toLowerCase();
-        //     array.forEach(opt =>{
-        //         // console.log(opt.div.className);
-        //         const isVisible = opt.div.className.includes(value)
-        //         opt.div.classList.toggle("hidden", !isVisible);
-        //         opt.div.classList.toggle("floating", isVisible);
-        //     })
-        //     // log the input value
-        //     console.log(`Input value: ${e.target.value}`);
-        // });
+    // Lap stopwatch
+    lapSWatch() {
+        // store the lap end time
+        this.lapEndTime = Date.now();
+        // Make a lap object which will store the lapStart and lapEnd
+        let lap = {
+            lapStart: this.lapStartTime,
+            lapEnd: this.lapEndTime,
+            lapTime: this.lapEndTime - this.lapStartTime
+        };
+        // Push the lap object to the laps array
+        this.laps.push(lap);
+        // Reset the lapStartTime to the current time
+        this.lapStartTime = this.lapEndTime;
+    }
+
+    // Continue stopwatch
+    continueSWatch() {
+        // Calculate the time paused
+        let pausedDuration = Date.now() - this.pauseTime;
+        // Adjust the startTime and lapStartTime by the paused duration
+        this.startTime += pausedDuration;
+        this.lapStartTime += pausedDuration;
+        // Clear the pauseTime
+        this.pauseTime = null;
+    }
+
+    // Stop stopwatch
+    stopSWatch() {
+        this.endTime = Date.now();
+        // Calculate total elapsed time
+        this.tElapsed = this.endTime - this.startTime;
+        // If the stopwatch was paused, adjust the elapsed time
+        if (this.pauseTime) {
+            this.tElapsed -= (this.pauseTime - this.startTime);
+        }
     }
 }
