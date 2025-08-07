@@ -50,8 +50,10 @@ export class Char {
                 else if (e.key === 'Shift') {
                     // add a one time keydown listener for the next key
                     const shiftEvent = (ev) => {
+                        // log ev.key and this.letter
+                        console.log('shifted key:', ev.key, 'expected:', this.letter.toLowerCase());
                         // If ev key matches this.letter in lowercase
-                        if (ev.key === this.letter.toLowerCase()) {
+                        if (ev.key === this.letter) {
                             // Resolve the promise
                             resolve(
                                 // Remove the 'current' class
@@ -287,44 +289,44 @@ export class Prompt {
     async float(callback) {
         // Add the 'float' class to the prompt div
         this.div.classList.add('float');
-        // Await a new Promise
-        await new Promise((resolve, reject) => {
-            // Add a keydown listener to the window
-            window.addEventListener('keydown', (event) => {
-                // if event.key is 'Enter'
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                }
-                if (event.key === 'Enter' 
-                    && this.div.classList.contains('float') 
-                    && !this.div.classList.contains('hiden') 
-                    && document.querySelectorAll('.float').length < 2) {
-                    // Resolve the promise
-                    resolve();
-                    // get the pinput textarea
-                    let pInput = document.querySelector('.pInput');
-                    // Nullify the pInput
-                    pInput.value = '';
+        // // Await a new Promise
+        // await new Promise((resolve, reject) => {
+        //     // Add a keydown listener to the window
+        //     window.addEventListener('keydown', (event) => {
+        //         // if event.key is 'Enter'
+        //         if (event.key === 'Enter') {
+        //             event.preventDefault();
+        //         }
+        //         if (event.key === 'Enter' 
+        //             && this.div.classList.contains('float') 
+        //             && !this.div.classList.contains('hiden') 
+        //             && document.querySelectorAll('.float').length < 2) {
+        //             // Resolve the promise
+        //             resolve();
+        //             // get the pinput textarea
+        //             let pInput = document.querySelector('.pInput');
+        //             // Nullify the pInput
+        //             pInput.value = '';
 
-                } else if (event.key === 'Enter' 
-                    && !this.div.classList.contains('float') 
-                    && this.div.classList.contains('hiden') 
-                    && document.querySelectorAll('.float').length < 2) {
-                    // Nullify the callback
-                    callback = null;    
-                    // Resolve the promise
-                    resolve();
-                }
-            });
-        }).then(() => {
-            // Call the callback if provided
-            if (callback) {
-                callback();
-            }
+        //         } else if (event.key === 'Enter' 
+        //             && !this.div.classList.contains('float') 
+        //             && this.div.classList.contains('hiden') 
+        //             && document.querySelectorAll('.float').length < 2) {
+        //             // Nullify the callback
+        //             callback = null;    
+        //             // Resolve the promise
+        //             resolve();
+        //         }
+        //     });
+        // }).then(() => {
+        //     // Call the callback if provided
+        //     if (callback) {
+        //         callback();
+        //     }
 
-        }).catch((err) => {
-            console.error('Error in float:', err);
-        });
+        // }).catch((err) => {
+        //     console.error('Error in float:', err);
+        // });
     }
 
     // Async method to make the prompt current

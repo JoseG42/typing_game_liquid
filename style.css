@@ -99,8 +99,8 @@ h1 {
 }
 
 @container promptcont (max-width: 89vw) {
-    .sentence {
-        font-size: clamp(1rem, 4cqw, 5vw);
+    .sent {
+        font-size: clamp(1rem, 2.3cqw, 5vw);
     }
     /* text-align: center; */
     /* align-items: center; */
@@ -108,8 +108,8 @@ h1 {
 }
 
 @container promptcont (max-width: 78vw) {
-    .sentence {
-        font-size: clamp(1rem, 4cqw, 5vw);
+    .sent {
+        font-size: clamp(1rem, 2.3cqw, 5vw);
     }
     /* text-align: center; */
     /* align-items: center; */
@@ -117,7 +117,7 @@ h1 {
 }
 
 @container promptcont (max-width: 20vw) {
-    .sentence, .word {
+    .sent{
         font-size: clamp(1rem, 10cqw, 100cqw);
     }
     /* text-align: center; */
@@ -128,9 +128,7 @@ h1 {
 /* Sentences */
 .sent {
     min-width: fit-content;
-    height: stretch;
     width: min-content;
-    aspect-ratio: 1.618;
     /* display: grid;
     grid-template-columns: repeat(auto-fit, min-content);
     grid-template-rows: repeat(auto-fit, min-content);
@@ -149,7 +147,7 @@ h1 {
     min-height: fit-content;
     min-width: fit-content;
     width: fit-content;
-    height: fit-content;
+    height: min-content;
     margin-right: .6rem;
     display: flex;
 }
