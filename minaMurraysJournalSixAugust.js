@@ -9,36 +9,44 @@ import { Char, Word, Sentence, Prompt, PInput, Timer} from './classes.js';
 // the first option is to start the game, the second option is to play random words, and the third option??? I'm not sure yet.
 export function scene0(gameContainer) {
     // options array
-    const options = [];
+    let options = [];
     // Clear the game container
     gameContainer.innerHTML = null;
+    // add the 'scene0' class to the gamecontainer div
+    gameContainer.classList.add('scene0');
+    let bContainer = document.createElement('div');
+    bContainer.style.gridArea = 'b';
+    gameContainer.appendChild(bContainer);
     //variable for the title
     let title = document.createElement('h1');
     // title is 'TRPG'
     title.textContent = "Mina Murray's Journal";
     // append the title to the game container
-    gameContainer.appendChild(title);
+    bContainer.appendChild(title);
     // variable for the subtitle
     let subtitle = document.createElement('h2');
     // subtitle is 'A Typing Role Playing Game'
     subtitle.textContent = '6 August';
     // append the subtitle to the game container
-    gameContainer.appendChild(subtitle);
+    bContainer.appendChild(subtitle);
 
 
     // display the dateTimeGrid
     //gameContainer.appendChild(dateTimeGrid);
     // Remember to rework the dateTimeGrid
 
-
+    let cContainer = document.createElement('div');
+    cContainer.style.gridArea = 'c';
+    cContainer.classList.add('options');
+    gameContainer.appendChild(cContainer);
     // Make a 'wStart' Word object
     const wStart = new Word('start');
     // Make a 'wGame' Word object
     const wGame = new Word('game','!');
     // Make a 'pStartGame' Prompt object
     const pStartGame = new Prompt(wStart, wGame);
-    // Add the pStartGame to the game container
-    gameContainer.appendChild(pStartGame.div);
+    // Add the pStartGame to the cContainer
+    cContainer.appendChild(pStartGame.div);
     // float the start game prompt
     pStartGame.float();
     // Make a 'wPlay' Word object
@@ -49,8 +57,8 @@ export function scene0(gameContainer) {
     const wWords = new Word('words');
     // Make a 'pPlayRandomWords' Prompt object
     const pPlayRandomWords = new Prompt(wPlay, wRandom, wWords);
-    // Add the pPlayRandomWords to the game container
-    gameContainer.appendChild(pPlayRandomWords.div);
+    // Add the pPlayRandomWords to the cContainer
+    cContainer.appendChild(pPlayRandomWords.div);
     // float the play random words prompt
     pPlayRandomWords.float();
     // push pStartGame, pPlayRandomWords to the options array
@@ -85,6 +93,8 @@ export function scene0(gameContainer) {
                 scene1(gameContainer);
                 // remove the 'selected' class from pStartGame
                 pStartGame.div.classList.remove('selected');
+                // remove the 'scene0' class from gameContainer
+                gameContainer.classList.remove('scene0');
             }
             // if pPlayRandomWords is selected
             else if (pPlayRandomWords.div.classList.contains('selected')) {
@@ -94,6 +104,8 @@ export function scene0(gameContainer) {
                 playRandomWords(gameContainer);
                 // remove the 'selected' class from pPlayRandomWords
                 pPlayRandomWords.div.classList.remove('selected');
+                // remove the 'scene0' class from gameContainer
+                gameContainer.classList.remove('scene0');
             }
             else {
                 console.log('No valid option selected');
@@ -111,38 +123,12 @@ export function scene0(gameContainer) {
 export function scene1(gameContainer) {
     // Clear the game container
     gameContainer.innerHTML = null;
+    gameContainer.classList.add('singleXLPrompt');
     // Create a new Sentence from the first sentence as a string
-    const s1 = Sentence.fromString("Another three days, and no news.");
-    // Create the second sentence
-    const s2 = Sentence.fromString("This suspense is getting dreadful.");
-    // Create the third sentence
-    const s3 = Sentence.fromString("If I only knew where to write to or where to go to, I should feel easier; but no one has heard a word of Jonathan since that last letter.");
-    // Fourth
-    const s4 = Sentence.fromString("I must only pray to God for patience.");
-    // Fifth
-    const s5 = Sentence.fromString("Lucy is more excitable than ever, but is otherwise well.");
-    // Sixth
-    const s6 = Sentence.fromString("Last night was very threatening, and the fishermen say that we are in for a storm.");
-    // Seventh
-    const s7 = Sentence.fromString("I must try to watch it and learn the weather signs.");
-    // Eighth
-    const s8 = Sentence.fromString("To-day is a grey day, and the sun as I write is hidden in thick clouds, high over Kettleness.");
-    // Ninth
-    const s9 = Sentence.fromString("Everything is grey—except the green grass, which seems like emerald amongst it; grey earthy rock; grey clouds, tinged with the sunburst at the far edge, hang over the grey sea, into which the sand-points stretch like grey fingers.");
-    // Tenth
-    const s10 = Sentence.fromString("The sea is tumbling in over the shallows and the sandy flats with a roar, muffled in the sea-mists drifting inland.");
-    // Eleventh
-    const s11 = Sentence.fromString("The horizon is lost in a grey mist.");
-    // Twelfth
-    const s12 = Sentence.fromString("All is vastness; the clouds are piled up like giant rocks, and there is a \"brool\" over the sea that sounds like some presage of doom.");
-    // Thirteenth
-    const s13 = Sentence.fromString("Dark figures are on the beach here and there, sometimes half shrouded in the mist, and seem \"men like trees walking.\"");
-    // Fourteenth
-    const s14 = Sentence.fromString("The fishing-boats are racing for home, and rise and dip in the ground swell as they sweep into the harbour, bending to the scuppers.");
-    // Fifteenth
-    const s15 = Sentence.fromString("Here comes old Mr. Swales. He is making straight for me, and I can see, by the way he lifts his hat, that he wants to talk....");
+    const s1 = Sentence.fromString("Another three days, and no news. This suspense is getting dreadful. If I only knew where to write to or where to go to, I should feel easier; but no one has heard a word of Jonathan since that last letter. I must only pray to God for patience. Lucy is more excitable than ever, but is otherwise well. Last night was very threatening, and the fishermen say that we are in for a storm. I must try to watch it and learn the weather signs. To-day is a grey day, and the sun as I write is hidden in thick clouds, high over Kettleness. Everything is grey—except the green grass, which seems like emerald amongst it; grey earthy rock; grey clouds, tinged with the sunburst at the far edge, hang over the grey sea, into which the sand-points stretch like grey fingers. The sea is tumbling in over the shallows and the sandy flats with a roar, muffled in the sea-mists drifting inland. The horizon is lost in a grey mist. All is vastness; the clouds are piled up like giant rocks, and there is a \"brool\" over the sea that sounds like some presage of doom. Dark figures are on the beach here and there, sometimes half shrouded in the mist, and seem \"men like trees walking.\" The fishing-boats are racing for home, and rise and dip in the ground swell as they sweep into the harbour, bending to the scuppers. Here comes old Mr. Swales. He is making straight for me, and I can see, by the way he lifts his hat, that he wants to talk....");
     // Make the pScene1 Prompt object
-    const pScene1 = new Prompt(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15);
+    const pScene1 = new Prompt(s1);
+    pScene1.div.style.gridArea = "a";
     // Add the pScene1 to the game container
     gameContainer.appendChild(pScene1.div);
     // Make the prompt current
@@ -202,6 +188,7 @@ export function scene1(gameContainer) {
 
 // Function to play random words
 export function playRandomWords(gameContainer) {
+    gameContainer.classList.add('singleXSPrompt');
     // Array of words for the game
     const words = [
         "adventure",
@@ -253,16 +240,19 @@ export function playRandomWords(gameContainer) {
     }
     // Make a pRandom Prompt object
     const pRandom = new Prompt(...randomWords);
+    pRandom.div.style.gridArea = "a";
     // Add the pRandom to the game container
     gameContainer.appendChild(pRandom.div);
     // Make the prompt current
     pRandom.isCurrent().then(() => {
+        gameContainer.classList.add('complete');
         // options array
         const options = [];
         // Make a 'wReturn' Word object
         const wReturn = new Word('return');
         // Make a pReturn Prompt object
         const pReturn = new Prompt(wReturn);
+        pReturn.div.style.gridArea = "c";
         // Add the pReturn to the game container
         gameContainer.appendChild(pReturn.div);
         // float the return prompt
@@ -298,6 +288,9 @@ export function playRandomWords(gameContainer) {
                     scene0(gameContainer);
                     // remove the 'selected' class from pReturn
                     pReturn.div.classList.remove('selected');
+                    // remove the 'singlePrompt' and 'complete' class from gameContainer
+                    gameContainer.classList.remove('singleXSPrompt');
+                    gameContainer.classList.remove('complete');
                 } else {
                     console.log('No valid option selected');
                 }

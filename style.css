@@ -21,16 +21,18 @@ body {
 }
 
 /* Game Container */
-.game-container {
-    margin-top: 2rem;
+#game-container {
+    margin-top: 1rem;
     box-shadow: 0 0 1rem #8d0000;
     width: 89vw;
     height: 55vw;
     aspect-ratio: 1.618;
     border-radius: .6vw;
     display: grid;
-    grid-template-rows: repeat(auto-fit, minmax(1vw, 100%));
-    grid-template-columns: repeat(auto-fit, 100%);
+    grid-template-rows: repeat(9, 1fr);
+    grid-template-columns: repeat(15, 1fr);
+    /* grid-template-rows: repeat(auto-fit, minmax(1vw, 100%));
+    grid-template-columns: repeat(auto-fit, 100%); */
     /* display: flex;
     flex-direction: column; */
     justify-content: center;
@@ -44,6 +46,12 @@ body {
 
 h1 {
     font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+h2 {
+    font-size: 1.5rem;
     font-weight: bold;
     margin: 0;
 }
@@ -75,78 +83,41 @@ h1 {
 .prompt {
     aspect-ratio: 1.618;
     margin: .3vw;
-    /* width: min-content;
-    height: min-content;
-    max-height: max-content; */
-    min-height: 2rem;
-    height: stretch;
-    min-width: min-content;
-    /* width: min-content; */
+    width: stretch;
     border: .3vw solid #4b0000;
-    padding: .5rem;
-    /* display: grid;
-    grid-template-columns: repeat(auto-fit, min-content);
-    grid-template-rows: repeat(auto-fit, min-content);
-    grid-auto-flow: row; */
+    padding: .1rem;
+    overflow-y: scroll;
     display: flex;
     flex-flow: row wrap;
-    justify-content: center;
     align-content: center;
-    justify-items: center;
-    align-items: center;
-    container-type: size;
-    container-name: promptcont;
+    justify-content: start;
 }
 
-@container promptcont (max-width: 89vw) {
-    .sent {
-        font-size: clamp(1rem, 2.3cqw, 5vw);
-    }
-    /* text-align: center; */
-    /* align-items: center; */
-    /* justify-items: center; */
+::-webkit-scrollbar {
+    width: .3vw;
 }
 
-@container promptcont (max-width: 78vw) {
-    .sent {
-        font-size: clamp(1rem, 2.3cqw, 5vw);
-    }
-    /* text-align: center; */
-    /* align-items: center; */
-    /* justify-items: center; */
-}
 
-@container promptcont (max-width: 20vw) {
-    .sent{
-        font-size: clamp(1rem, 10cqw, 100cqw);
-    }
-    /* text-align: center; */
-    /* align-items: center; */
-    /* justify-items: center; */
+::-webkit-scrollbar-thumb {
+    background-color: #4b0000;
 }
 
 /* Sentences */
 .sent {
-    min-width: fit-content;
-    width: min-content;
-    /* display: grid;
-    grid-template-columns: repeat(auto-fit, min-content);
-    grid-template-rows: repeat(auto-fit, min-content);
-    grid-auto-flow: row; */
+    /* aspect-ratio: 1.618; */
+    height: min-content;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
     align-content: center;
     justify-items: center;
     align-items: center;
-    /* font-size: clamp(1rem, 170%, 5vw); */
+    font-size: 1.8vw;
 }
 
 /* Words */
 .word {
-    min-height: fit-content;
-    min-width: fit-content;
-    width: fit-content;
+    width: min-content;
     height: min-content;
     margin-right: .6rem;
     display: flex;
@@ -165,6 +136,7 @@ textarea {
     border-radius: .3rem;
     background-color: #1d0000;
     color: #ff9191;
+    grid-area: d;
 }
 
 textarea:focus {
@@ -186,6 +158,10 @@ textarea:focus {
     font-weight: bold;
 }
 
+.hidden {
+    display: none;
+}
+
 /* Style for game info */
 .game-info {
     margin-top: 20px;
@@ -202,4 +178,113 @@ textarea:focus {
     font-weight: bold;
     color: #6f0707;
     background-color: #ff5c5c;
+}
+
+/* Style for scene0 */
+.scene0 {
+    grid-template-areas: 
+    "a a a a b b b b b b b e e e e"
+    "a a a a b b b b b b b e e e e"
+    "a a a a b b b b b b b e e e e"
+    "a a a a b b b b b b b e e e e"
+    "a a a a c c c c c c c e e e e"
+    "a a a a c c c c c c c e e e e"
+    "a a a a c c c c c c c e e e e"
+    "g g g g g g d d d f f f f f f"
+    "g g g g g g d d d f f f f f f"
+    ;
+}
+
+.singleXSPrompt {
+    /*Max 30 words*/
+    grid-template-areas:
+    "b b b b b a a a a a c c c c c"
+    "b b b b b a a a a a c c c c c"
+    "b b b b b a a a a a c c c c c"
+    "b b b b b a a a a a c c c c c"
+    "b b b b b a a a a a c c c c c"
+    "b b b b b a a a a a c c c c c"
+    "b b b b b a a a a a c c c c c"
+    "b b b b b a a a a a c c c c c"
+    "b b b b b a a a a a c c c c c"
+}
+
+.singleSmallPrompt {
+    /*Max 60 words*/
+    grid-template-areas: 
+    "b b b b a a a a a a a c c c c"
+    "b b b b a a a a a a a c c c c"
+    "b b b b a a a a a a a c c c c"
+    "b b b b a a a a a a a c c c c"
+    "b b b b a a a a a a a c c c c"
+    "b b b b a a a a a a a c c c c"
+    "b b b b a a a a a a a c c c c"
+    "b b b b a a a a a a a c c c c"
+    "b b b b a a a a a a a c c c c"
+    ;
+}
+
+.singleMedPrompt {
+    /*Max 100 words*/
+    grid-template-areas: 
+    "b b b a a a a a a a a a c c c"
+    "b b b a a a a a a a a a c c c"
+    "b b b a a a a a a a a a c c c"
+    "b b b a a a a a a a a a c c c"
+    "b b b a a a a a a a a a c c c"
+    "b b b a a a a a a a a a c c c"
+    "b b b a a a a a a a a a c c c"
+    "b b b a a a a a a a a a c c c"
+    "b b b a a a a a a a a a c c c"
+    ;
+}
+
+.singleLargePrompt {
+    /*Max 160 words*/
+    grid-template-areas:
+    "b b a a a a a a a a a a a c c"
+    "b b a a a a a a a a a a a c c"
+    "b b a a a a a a a a a a a c c"
+    "b b a a a a a a a a a a a c c"
+    "b b a a a a a a a a a a a c c"
+    "b b a a a a a a a a a a a c c"
+    "b b a a a a a a a a a a a c c"
+    "b b a a a a a a a a a a a c c"
+    "b b a a a a a a a a a a a c c"
+}
+
+.singleXLPrompt {
+    /*Fits 230 words*/
+    grid-template-areas:
+    "b a a a a a a a a a a a a a c"
+    "b a a a a a a a a a a a a a c"
+    "b a a a a a a a a a a a a a c"
+    "b a a a a a a a a a a a a a c"
+    "b a a a a a a a a a a a a a c"
+    "b a a a a a a a a a a a a a c"
+    "b a a a a a a a a a a a a a c"
+    "b a a a a a a a a a a a a a c"
+    "b a a a a a a a a a a a a a c"
+}
+
+
+.singleXLPrompt.complete {
+    grid-template-areas: 
+    "x x x x a a a a a a a w w w w"
+    "x x x x a a a a a a a w w w w"
+    "x x x x a a a a a a a w w w w"
+    "x x x x a a a a a a a w w w w"
+    "x x x x a a a a a a a w w w w"
+    "c c c c c c c c c c c c c c c"
+    "c c c c c c c c c c c c c c c"
+    "z z z z z z d d d y y y y y y"
+    "z z z z z z d d d y y y y y y"
+    ;
+}
+
+.options {
+    width: stretch;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 1rem;
 }

@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
     // Initialize game elements
-    const gameContainer = document.querySelector('.game-container');
+    const gameContainer = document.querySelector('#game-container');
     // game status display
     const gameStatusDisplay = document.querySelector('#game-status');
     // test div

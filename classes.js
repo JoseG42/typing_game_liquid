@@ -146,6 +146,7 @@ export class Word {
     async isCurrent(timer = null) {
         // add the 'current' class to the word div
         this.div.classList.add('current');
+        this.div.scrollIntoView({ behavior: 'smooth', block: 'center', container:'nearest' });
         // return a new Promise
         return new Promise(async (resolve, reject) => {
             // For each char in this.chars
