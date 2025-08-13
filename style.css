@@ -1,6 +1,6 @@
 html {
     font-size: 16px;
-    font-family: Arial, sans-serif;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 /* Color Palettes */
@@ -83,13 +83,12 @@ h2 {
 .prompt {
     aspect-ratio: 1.618;
     margin: .3vw;
-    width: stretch;
     border: .3vw solid #4b0000;
-    padding: .1rem;
+    padding: .5rem;
     overflow-y: scroll;
     display: flex;
     flex-flow: row wrap;
-    align-content: center;
+    align-content: flex-start;
     justify-content: start;
 }
 
@@ -125,6 +124,8 @@ h2 {
 
 
 textarea {
+    min-height: 2rem;
+    min-width: 4rem;
     height: min-content;
     width: min-content;
     aspect-ratio: 1.618;
@@ -136,7 +137,7 @@ textarea {
     border-radius: .3rem;
     background-color: #1d0000;
     color: #ff9191;
-    grid-area: d;
+    grid-area: i;
 }
 
 textarea:focus {
@@ -150,12 +151,10 @@ textarea:focus {
 /* Style for the correct class */
 .correct {
     color: #28a745; /* Green for correct words */
-    font-weight: bold;
 }
 /* Style for the incorrect class */
 .incorrect {
     color: #dc3545; /* Red for incorrect words */
-    font-weight: bold;
 }
 
 .hidden {
@@ -198,59 +197,74 @@ textarea:focus {
 .singleXSPrompt {
     /*Max 30 words*/
     grid-template-areas:
-    "b b b b b a a a a a c c c c c"
-    "b b b b b a a a a a c c c c c"
-    "b b b b b a a a a a c c c c c"
-    "b b b b b a a a a a c c c c c"
-    "b b b b b a a a a a c c c c c"
-    "b b b b b a a a a a c c c c c"
-    "b b b b b a a a a a c c c c c"
-    "b b b b b a a a a a c c c c c"
-    "b b b b b a a a a a c c c c c"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "e e e e e e e e e e e e e e e"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "x x x x x x x x x x x x x x x"
+}
+
+.singleXSPrompt.complete {
+    grid-template-areas:
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "o o o o o o o o o o o o o o o"
+    "o o o o o o o o o o o o o o o"
+    "i i i i i i i i i i i i i i i"
+    "i i i i i i i i i i i i i i i"
+    ;
+
 }
 
 .singleSmallPrompt {
     /*Max 60 words*/
     grid-template-areas: 
-    "b b b b a a a a a a a c c c c"
-    "b b b b a a a a a a a c c c c"
-    "b b b b a a a a a a a c c c c"
-    "b b b b a a a a a a a c c c c"
-    "b b b b a a a a a a a c c c c"
-    "b b b b a a a a a a a c c c c"
-    "b b b b a a a a a a a c c c c"
-    "b b b b a a a a a a a c c c c"
-    "b b b b a a a a a a a c c c c"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "e e e e e e e e e e e e e e e"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "x x x x x x x x x x x x x x x"
     ;
 }
 
-.singleMedPrompt {
+.singleMediumPrompt {
     /*Max 100 words*/
     grid-template-areas: 
-    "b b b a a a a a a a a a c c c"
-    "b b b a a a a a a a a a c c c"
-    "b b b a a a a a a a a a c c c"
-    "b b b a a a a a a a a a c c c"
-    "b b b a a a a a a a a a c c c"
-    "b b b a a a a a a a a a c c c"
-    "b b b a a a a a a a a a c c c"
-    "b b b a a a a a a a a a c c c"
-    "b b b a a a a a a a a a c c c"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "e e e e e e e e e e e e e e e"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "x x x x x x x x x x x x x x x"
     ;
 }
 
 .singleLargePrompt {
     /*Max 160 words*/
     grid-template-areas:
-    "b b a a a a a a a a a a a c c"
-    "b b a a a a a a a a a a a c c"
-    "b b a a a a a a a a a a a c c"
-    "b b a a a a a a a a a a a c c"
-    "b b a a a a a a a a a a a c c"
-    "b b a a a a a a a a a a a c c"
-    "b b a a a a a a a a a a a c c"
-    "b b a a a a a a a a a a a c c"
-    "b b a a a a a a a a a a a c c"
+    "p p p p p p p p p p p p p p p"
+    "p p p p p p p p p p p p p p p"
+    "e e e e e e e e e e e e e e e"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "x x x x x x x x x x x x x x x"
 }
 
 .singleXLPrompt {
@@ -282,9 +296,25 @@ textarea:focus {
     ;
 }
 
+.previouslyComplete {
+    grid-area: p;
+    max-height: 100%;
+    display: grid;
+    grid-template-rows: auto;
+    gap: 1rem;
+    overflow-y: scroll;
+    justify-items: center;
+}
+
+.prompt.current {
+    grid-area: a;
+}
 .options {
-    width: stretch;
+    width: fit-content;
     display: grid;
     grid-auto-flow: column;
     gap: 1rem;
+    justify-content: center;
+    grid-area: o;
+    overflow-x: scroll;
 }

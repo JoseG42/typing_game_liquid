@@ -33,10 +33,12 @@ export class Char {
                 if (timer && timer.startTime === 'waiting') {
                     timer.startSWatch();
                     // log start time
-                    console.log('char',timer);
+                    //console.log('char',timer);
                 }
                 // If e key matches this.letter
                 if (e.key === this.letter) {
+                    // Prevent default behavior
+                    e.preventDefault();
                     // Resolve the promise
                     resolve(
                         // Remove the 'current' class
@@ -51,7 +53,7 @@ export class Char {
                     // add a one time keydown listener for the next key
                     const shiftEvent = (ev) => {
                         // log ev.key and this.letter
-                        console.log('shifted key:', ev.key, 'expected:', this.letter.toLowerCase());
+                        //console.log('shifted key:', ev.key, 'expected:', this.letter.toLowerCase());
                         // If ev key matches this.letter in lowercase
                         if (ev.key === this.letter) {
                             // Resolve the promise
@@ -77,10 +79,12 @@ export class Char {
                     document.addEventListener('keydown', shiftEvent, { once: true });
                 }// else if e key is 'space' and this.letter is not a space
                 else if (e.key === ' ' && this.letter !== ' ') {
+                    // Prevent default behavior
+                    e.preventDefault();
                     // get all remaining chars in the parent word
                     let parentWord = this.div.parentElement;
                     let remainingChars = Array.from(parentWord.querySelectorAll('.char')).filter(c => !c.classList.contains('correct') && !c.classList.contains('incorrect'));
-                    console.log('skipping', remainingChars);
+                    //console.log('skipping', remainingChars);
                     // Mark all remaining chars as incorrect
                     for (let c of remainingChars) {
                         c.classList.remove('current');
@@ -154,7 +158,7 @@ export class Word {
                 // If startTime is not set, pass it to isCurrent
                 if (timer) {
                     // log start time
-                    console.log(timer);
+                    //console.log(timer);
                     await char.isCurrent(timer)
                 } else {
                     await char.isCurrent();
@@ -226,7 +230,7 @@ export class Sentence {
                 // If startTime is not set, pass it to isCurrent
                 if (timer) {
                     // log start time
-                    console.log(timer);
+                    //console.log(timer);
                     await obj.isCurrent(timer);
                 } else {
                     await obj.isCurrent();
@@ -284,12 +288,28 @@ export class Prompt {
                 this.div.appendChild(obj.div);
             }
         }
+        if (this.wordCount < 21) {
+            this.div.style.height = '10vw';
+        } else if (this.wordCount < 31) {
+            this.div.style.height = '15vw';
+        } else if (this.wordCount < 61) {
+            this.div.style.height = '21vw';
+        } else if (this.wordCount < 101) {
+            this.div.style.height = '27vw';
+        } else if (this.wordCount < 121) {
+            this.div.style.height = '30vw';
+        } else if (this.wordCount < 150) {
+            this.div.style.height = '35vw';
+        } else {
+            this.div.style.height = '40vw';
+        }
     }
 
     // Async method to float the prompt
     async float(callback) {
         // Add the 'float' class to the prompt div
         this.div.classList.add('float');
+        this.func = callback;
         // // Await a new Promise
         // await new Promise((resolve, reject) => {
         //     // Add a keydown listener to the window
@@ -330,10 +350,22 @@ export class Prompt {
         // });
     }
 
+    runSelected(gameContainer, options) {
+        if (this.func) {
+            this.func(gameContainer, options);
+        }
+    }
+
     // Async method to make the prompt current
     async isCurrent(callback) {
         // Add the 'current' class to the prompt div
         this.div.classList.add('current');
+        // get all chars in this prompt
+        const chars = this.div.querySelectorAll('.char');
+        for (let char of chars) {
+            char.classList.remove('correct', 'incorrect', 'current');
+        }
+
         // Await a new Promise
         await new Promise(async (resolve, reject) => {
             // for obj in this.objects
@@ -403,7 +435,7 @@ export class PInput {
             const value = e.target.value.toLowerCase();
             options.forEach(opt =>{
                 // console.log(opt.div.className);
-                const isVisible = opt.div.textContent.includes(value)
+                const isVisible = opt.div.textContent.toLowerCase().includes(value)
                 opt.div.classList.toggle("hidden", !isVisible);
                 opt.div.classList.toggle("float", isVisible);
             });

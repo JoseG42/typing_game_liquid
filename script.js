@@ -1,8 +1,9 @@
 // Import classes from classes.js
 import { Char, Word, Sentence, Prompt, PInput, Timer} from './classes.js';
 // Import functions from minaMurraysJournalSixAugust.js
-import { scene0, playRandomWords, scene1, scene2, scene3, scene4 } from './minaMurraysJournalSixAugust.js';
-
+//import { scene0, playRandomWords, scene1, scene2, scene3, scene4 } from './minaMurraysJournalSixAugust.js';
+// Import from sciFi.js
+import { firstPage} from './sciFi.js';
 // listen for the DOM to load
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize game variables
@@ -78,9 +79,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameEndTime = document.getElementById('game-end-time');
     // program the total run time
     const totalRunTime = document.getElementById('total-run-time');
+    const options = [];
+    const WPMlist = [];
+    // call firstPage to start the game
+    firstPage(gameContainer, options,);
 
-    // call scene0 to start the game
-    scene0(gameContainer);
-
-
+    // Listen for user input
+    window.addEventListener('keydown', (event) => {
+        if (event.key === ' ') {
+            // Prevent default behavior
+            event.preventDefault();
+        }
+    });
 });
