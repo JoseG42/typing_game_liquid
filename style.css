@@ -194,7 +194,7 @@ textarea:focus {
     ;
 }
 
-.singleXSPrompt {
+.xSPrompt {
     /*Max 30 words*/
     grid-template-areas:
     "p p p p p p p p p p p p p p p"
@@ -208,7 +208,7 @@ textarea:focus {
     "x x x x x x x x x x x x x x x"
 }
 
-.singleXSPrompt.complete {
+.xSPrompt.complete {
     grid-template-areas:
     "p p p p p p p p p p p p p p p"
     "p p p p p p p p p p p p p p p"
@@ -223,7 +223,7 @@ textarea:focus {
 
 }
 
-.singleSmallPrompt {
+.smallPrompt {
     /*Max 60 words*/
     grid-template-areas: 
     "p p p p p p p p p p p p p p p"
@@ -238,7 +238,7 @@ textarea:focus {
     ;
 }
 
-.singleMediumPrompt {
+.medPrompt {
     /*Max 100 words*/
     grid-template-areas: 
     "p p p p p p p p p p p p p p p"
@@ -253,7 +253,7 @@ textarea:focus {
     ;
 }
 
-.singleLargePrompt {
+.largePrompt {
     /*Max 160 words*/
     grid-template-areas:
     "p p p p p p p p p p p p p p p"
@@ -267,32 +267,32 @@ textarea:focus {
     "x x x x x x x x x x x x x x x"
 }
 
-.singleXLPrompt {
+.xLPrompt {
     /*Fits 230 words*/
     grid-template-areas:
-    "b a a a a a a a a a a a a a c"
-    "b a a a a a a a a a a a a a c"
-    "b a a a a a a a a a a a a a c"
-    "b a a a a a a a a a a a a a c"
-    "b a a a a a a a a a a a a a c"
-    "b a a a a a a a a a a a a a c"
-    "b a a a a a a a a a a a a a c"
-    "b a a a a a a a a a a a a a c"
-    "b a a a a a a a a a a a a a c"
+    "p p p p p p p p p p p p p p p"
+    "e e e e e e e e e e e e e e e"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "a a a a a a a a a a a a a a a"
+    "x x x x x x x x x x x x x x x"
 }
 
 
-.singleXLPrompt.complete {
+.complete {
     grid-template-areas: 
-    "x x x x a a a a a a a w w w w"
-    "x x x x a a a a a a a w w w w"
-    "x x x x a a a a a a a w w w w"
-    "x x x x a a a a a a a w w w w"
-    "x x x x a a a a a a a w w w w"
-    "c c c c c c c c c c c c c c c"
-    "c c c c c c c c c c c c c c c"
-    "z z z z z z d d d y y y y y y"
-    "z z z z z z d d d y y y y y y"
+    "x x p p p p p p p p p p w w w"
+    "x x p p p p p p p p p p w w w"
+    "x x p p p p p p p p p p w w w"
+    "x x p p p p p p p p p p w w w"
+    "x x p p p p p p p p p p w w w"
+    "o o o o o o o o o o o o o o o"
+    "o o o o o o o o o o o o o o o"
+    "i i i i i i i i i i i i i i i"
+    "i i i i i i i i i i i i i i i"
     ;
 }
 

@@ -3,7 +3,7 @@ import { Char, Word, Sentence, Prompt, PInput, Timer} from './classes.js';
 // Import functions from minaMurraysJournalSixAugust.js
 //import { scene0, playRandomWords, scene1, scene2, scene3, scene4 } from './minaMurraysJournalSixAugust.js';
 // Import from sciFi.js
-import { firstPage} from './sciFi.js';
+import { createEighthAugustPage1, promptsEighthAugustPage1, finish} from './draculaDaily.js';
 // listen for the DOM to load
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize game variables
@@ -79,10 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameEndTime = document.getElementById('game-end-time');
     // program the total run time
     const totalRunTime = document.getElementById('total-run-time');
-    const options = [];
     const WPMlist = [];
-    // call firstPage to start the game
-    firstPage(gameContainer, options,);
+    // call createEighthAugustPage1 to create the first page
+    createEighthAugustPage1(gameContainer, promptsEighthAugustPage1);
 
     // Listen for user input
     window.addEventListener('keydown', (event) => {

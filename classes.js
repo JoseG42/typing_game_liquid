@@ -97,6 +97,34 @@ export class Char {
                         // Remove the 'current' class
                         this.div.classList.remove('current')
                     );
+                } else if (e.key === 'CapsLock') {
+                    // add a one time keydown listener for the next key
+                    const capsEvent = (ev) => {
+                        // log ev.key and this.letter
+                        //console.log('shifted key:', ev.key, 'expected:', this.letter.toLowerCase());
+                        // If ev key matches this.letter in lowercase
+                        if (ev.key === this.letter) {
+                            // Resolve the promise
+                            resolve(
+                                // Remove the 'current' class
+                                this.div.classList.remove('current'),
+                                // Add the 'correct' class
+                                this.div.classList.add('correct')
+                            );
+                            // Remove the event listener
+                            document.removeEventListener('keydown', capsEvent);
+                        } else {
+                            // Resolve the promise
+                            resolve(
+                                // Remove the 'current' class
+                                this.div.classList.remove('current'),
+                                // Add the 'incorrect' class
+                                this.div.classList.add('incorrect')
+                            );
+                        }
+                    };
+                    // Add the keydown event listener
+                    document.addEventListener('keydown', capsEvent, { once: true });
                 } else {
                     // Resolve the promise
                     resolve(
@@ -298,18 +326,15 @@ export class Prompt {
             this.div.style.height = '27vw';
         } else if (this.wordCount < 121) {
             this.div.style.height = '30vw';
-        } else if (this.wordCount < 150) {
-            this.div.style.height = '35vw';
         } else {
-            this.div.style.height = '40vw';
+            this.div.style.height = '34vw';
         }
     }
 
     // Async method to float the prompt
-    async float(callback) {
+    async float() {
         // Add the 'float' class to the prompt div
         this.div.classList.add('float');
-        this.func = callback;
         // // Await a new Promise
         // await new Promise((resolve, reject) => {
         //     // Add a keydown listener to the window
@@ -350,9 +375,9 @@ export class Prompt {
         // });
     }
 
-    runSelected(gameContainer, options) {
+    runSelected(gameContainer) {
         if (this.func) {
-            this.func(gameContainer, options);
+            this.func(gameContainer);
         }
     }
 
@@ -505,5 +530,93 @@ export class Timer {
         if (this.pauseTime) {
             this.tElapsed -= (this.pauseTime - this.startTime);
         }
+    }
+}
+
+export class Scene {
+
+    constructor(gameContainer, prompts) {
+        this.gameContainer = gameContainer;
+        this.prompts = prompts;
+        this.gameContainer.classList.remove('complete');
+        this.gameContainer.innerHTML = '';
+        this.visited = 0;
+        this.optionsDiv = document.createElement('div');
+    }
+
+    static options = [];
+    static previousDiv = document.createElement('div');
+    static playerInput = new PInput();
+    static timer = new Timer();
+
+    async playScene() {
+        if (this.visited === 0) {
+            this.visited++;
+            this.gameContainer.classList.remove('complete');
+            this.gameContainer.innerHTML = '';
+            this.previousDiv = document.createElement('div');
+            this.gameContainer.appendChild(this.previousDiv);
+            this.previousDiv.classList.add('previouslyComplete');
+            for(let p of this.prompts) {
+                if (p.wordCount < 21) {
+                    this.gameContainer.classList.remove('xSPrompt', 'smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt');
+                    this.gameContainer.classList.add('xSPrompt');
+                } else if (p.wordCount < 31) {
+                    this.gameContainer.classList.remove('xSPrompt', 'smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt');
+                    this.gameContainer.classList.add('smallPrompt');
+                } else if (p.wordCount < 61) {
+                    this.gameContainer.classList.remove('smallPrompt', 'medPrompt', 'xLPrompt', 'largePrompt', 'xSPrompt');
+                    this.gameContainer.classList.add('medPrompt');
+                } else if (p.wordCount < 101) {
+                    this.gameContainer.classList.remove('smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt', 'xSPrompt');
+                    this.gameContainer.classList.add('largePrompt');
+                } else {
+                    this.gameContainer.classList.remove('smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt', 'xSPrompt');
+                    this.gameContainer.classList.add('xLPrompt');
+                }
+                this.gameContainer.appendChild(p.div);
+                await p.isCurrent();
+                this.previousDiv.appendChild(p.div);
+
+            }
+            this.playOptions();
+        }
+    }
+
+    async playOptions() {
+        console.log('playOptions', Scene.options);
+        this.gameContainer.classList.remove('xSPrompt', 'smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt');
+        this.gameContainer.classList.add('complete');
+        this.optionsDiv.innerHTML = '';
+        this.optionsDiv.classList.add('options');
+        this.gameContainer.appendChild(this.optionsDiv);
+        for (let opt of Scene.options) {
+            this.optionsDiv.appendChild(opt.div);
+            //opt.float();
+        }
+        this.gameContainer.appendChild(Scene.playerInput.textarea);
+        Scene.playerInput.textarea.focus();
+        Scene.playerInput.attachOptionsFilter(Scene.options);
+        document.addEventListener('keydown', (e) => {
+        // if the enter key is pressed
+            if (e.key === 'Enter' && document.querySelectorAll('.float').length === 1) {
+                let selectedOption = document.querySelector('.float');
+                selectedOption.classList.add('selected');
+                console.log('Selected option:', selectedOption);
+                e.preventDefault();
+                console.log('Enter key pressed');
+                console.log('options:', Scene.options);
+                for (let opt of Scene.options) {
+                    if (opt.div.classList.contains('selected')) {
+                        console.log('Selected option:', opt);
+                        opt.runSelected(this.gameContainer);
+                        opt.div.classList.remove('selected');
+                    }
+                }
+            } else if (e.key === 'Enter' && document.querySelectorAll('.float').length < 1) {
+                console.log('please select type until there is only one option');
+                e.preventDefault();
+            }
+        });
     }
 }
