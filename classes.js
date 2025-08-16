@@ -316,7 +316,9 @@ export class Prompt {
                 this.div.appendChild(obj.div);
             }
         }
-        if (this.wordCount < 21) {
+        if (this.wordCount < 7) {
+            this.div.style.height = 'auto';
+        } else if (this.wordCount < 21) {
             this.div.style.height = '10vw';
         } else if (this.wordCount < 31) {
             this.div.style.height = '15vw';
@@ -549,37 +551,76 @@ export class Scene {
     static playerInput = new PInput();
     static timer = new Timer();
 
+    static updateGameStats(prompt) {
+        let wpmDisplay = document.getElementById('wpmDisplay');
+        let accuracyDisplay = document.getElementById('accuracy');
+        wpmDisplay.textContent = prompt.wpm;
+        accuracyDisplay.textContent = prompt.accuracy;
+    }
+
     async playScene() {
         if (this.visited === 0) {
             this.visited++;
-            this.gameContainer.classList.remove('complete');
             this.gameContainer.innerHTML = '';
             this.previousDiv = document.createElement('div');
             this.gameContainer.appendChild(this.previousDiv);
             this.previousDiv.classList.add('previouslyComplete');
             for(let p of this.prompts) {
+                this.gameContainer.classList.remove('xSPrompt', 'smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt');
                 if (p.wordCount < 21) {
-                    this.gameContainer.classList.remove('xSPrompt', 'smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt');
                     this.gameContainer.classList.add('xSPrompt');
                 } else if (p.wordCount < 31) {
-                    this.gameContainer.classList.remove('xSPrompt', 'smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt');
                     this.gameContainer.classList.add('smallPrompt');
                 } else if (p.wordCount < 61) {
-                    this.gameContainer.classList.remove('smallPrompt', 'medPrompt', 'xLPrompt', 'largePrompt', 'xSPrompt');
                     this.gameContainer.classList.add('medPrompt');
                 } else if (p.wordCount < 101) {
-                    this.gameContainer.classList.remove('smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt', 'xSPrompt');
                     this.gameContainer.classList.add('largePrompt');
                 } else {
-                    this.gameContainer.classList.remove('smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt', 'xSPrompt');
                     this.gameContainer.classList.add('xLPrompt');
                 }
                 this.gameContainer.appendChild(p.div);
                 await p.isCurrent();
                 this.previousDiv.appendChild(p.div);
-
+                Scene.updateGameStats(p);
             }
             this.playOptions();
+        }
+        if (this.visited > 0) {
+
+        }
+    }
+
+    async playEvent(eventPrompts) {
+            this.gameContainer.classList.remove('complete');
+            this.optionsDiv.classList.add('hidden');
+            Scene.playerInput.textarea.classList.add('hidden'); 
+            for(let p of this.prompts) {
+                this.gameContainer.classList.remove('xSPrompt', 'smallPrompt', 'medPrompt', 'largePrompt', 'xLPrompt');
+                if (p.wordCount < 21) {
+                    this.gameContainer.classList.add('xSPrompt');
+                } else if (p.wordCount < 31) {
+                    this.gameContainer.classList.add('smallPrompt');
+                } else if (p.wordCount < 61) {
+                    this.gameContainer.classList.add('medPrompt');
+                } else if (p.wordCount < 101) {
+                    this.gameContainer.classList.add('largePrompt');
+                } else {
+                    this.gameContainer.classList.add('xLPrompt');
+                }
+                this.gameContainer.appendChild(p.div);
+                await p.isCurrent();
+                this.previousDiv.appendChild(p.div);
+                Scene.updateGameStats(p);
+            }
+            this.playOptions();
+            this.optionsDiv.classList.remove('hidden');
+            Scene.playerInput.textarea.classList.remove('hidden');
+
+    }
+
+    loadPrevComplete(prevPrompts) {
+        for (let p of prevPrompts) {
+            this.previousDiv.appendChild(p.div);
         }
     }
 
@@ -611,6 +652,9 @@ export class Scene {
                         console.log('Selected option:', opt);
                         opt.runSelected(this.gameContainer);
                         opt.div.classList.remove('selected');
+                        // remove every prompt from the options array
+                        Scene.options = [];
+                        console.log('options after selection:', Scene.options);
                     }
                 }
             } else if (e.key === 'Enter' && document.querySelectorAll('.float').length < 1) {
